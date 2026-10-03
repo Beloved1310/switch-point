@@ -8,11 +8,16 @@ export function DashboardHeader({
   experiment,
   versions,
   live,
+  syntheticDemo,
 }: {
   experiment: ExperimentSummary;
   versions: string[];
   live: boolean;
+  syntheticDemo: boolean;
 }) {
+  const versionLabel = (version: string) =>
+    version === "v1-synthetic-demo" ? "Synthetic demo" : version === "v1" ? "Live study" : version;
+
   return (
     <header className="flex flex-wrap items-end justify-between gap-4">
       <div>
@@ -28,7 +33,7 @@ export function DashboardHeader({
               className="rounded-md border border-line bg-surface px-1.5 py-0.5"
             >
               {versions.map((v) => (
-                <option key={v}>{v}</option>
+                <option key={v} value={v}>{versionLabel(v)}</option>
               ))}
             </select>
           ) : (
@@ -39,8 +44,8 @@ export function DashboardHeader({
       </div>
       <div className="flex flex-wrap items-center gap-4 text-sm text-ink-2">
         <span className="flex items-center gap-2" aria-live="polite">
-          <span className={`h-2 w-2 rounded-full ${live ? "bg-good" : "bg-ink-3"}`} aria-hidden />
-          {live ? "Live" : "Refreshing every 15s"}
+          <span className={`h-2 w-2 rounded-full ${live && !syntheticDemo ? "bg-good" : "bg-ink-3"}`} aria-hidden />
+          {syntheticDemo ? "Demo data" : live ? "Live updates" : "Refreshing every 15s"}
         </span>
         <Link href="/experiment" target="_blank" className="dashboard-home-link">
           Preview study ↗

@@ -24,6 +24,7 @@ interface Props {
 /** Retailer dashboard: a plain-language summary first, details one tab away. */
 export function DashboardClient({ initial, experimentUrl, qrDataUrl, realtime }: Props) {
   const { data, live, refresh } = useLiveDashboard(initial, realtime);
+  const syntheticDemo = data.experiment.version === "v1-synthetic-demo";
 
   const tabs: TabItem[] = [
     { id: "summary", label: "Summary" },
@@ -57,13 +58,22 @@ export function DashboardClient({ initial, experimentUrl, qrDataUrl, realtime }:
 
   return (
     <main className="dashboard-page mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8">
-      <DashboardHeader experiment={data.experiment} versions={data.versions} live={live} />
+      {syntheticDemo && (
+        <aside
+          role="note"
+          className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950"
+        >
+          <strong className="font-semibold">SYNTHETIC DEMO DATA.</strong>{" "}
+          These generated responses are for demonstration only. They are not real participant or market research results.
+        </aside>
+      )}
+      <DashboardHeader experiment={data.experiment} versions={data.versions} live={live} syntheticDemo={syntheticDemo} />
       <DashboardTabs tabs={tabs} active={tab} onSelect={open} />
 
       <div role="tabpanel" id={`panel-${tab}`} aria-labelledby={`tab-${tab}`} className="flex flex-col gap-8">
         {tab === "summary" && (
           <>
-            <SummaryPanel data={data} experimentUrl={experimentUrl} qrDataUrl={qrDataUrl} onOpen={open} />
+            <SummaryPanel data={data} experimentUrl={experimentUrl} qrDataUrl={qrDataUrl} />
             <InsightPanel data={data} onChange={refresh} />
           </>
         )}
