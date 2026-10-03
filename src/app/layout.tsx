@@ -23,7 +23,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-dvh">{children}</body>
+      {/* Browser extensions (e.g. Grammarly) inject attributes on <body>. */}
+      <body className="min-h-dvh" suppressHydrationWarning>
+        {children}
+      </body>
     </html>
   );
 }

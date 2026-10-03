@@ -45,7 +45,7 @@ SwitchPoint runs controlled A/B product-choice experiments to measure what actua
 
 ## Getting Started
 
-1. Create a Supabase project and run [supabase/migrations/0001_init.sql](supabase/migrations/0001_init.sql) in the SQL editor.
+1. Create a Supabase project and run each file in [supabase/migrations/](supabase/migrations/) in order in the SQL editor: [0001_init.sql](supabase/migrations/0001_init.sql), then [0002_rate_limits.sql](supabase/migrations/0002_rate_limits.sql).
 2. Copy `.env.example` to `.env.local` and fill in the values.
 3. Install and run:
 

@@ -1,9 +1,18 @@
 import type { Metadata } from "next";
-import { ExperimentFlow } from "@/components/ExperimentFlow";
-import { EXPERIMENT } from "@/lib/experiment/config";
+import { ExperimentFlow } from "@/components/experiment/ExperimentFlow";
+import { activeExperiment } from "@/config/experiments";
 
 export const metadata: Metadata = { title: "Take part · SwitchPoint" };
 
 export default function ExperimentPage() {
-  return <ExperimentFlow fulfilmentEnabled={EXPERIMENT.fulfilment.enabled} />;
+  const config = activeExperiment();
+  return (
+    <ExperimentFlow
+      intro={{
+        category: config.category,
+        choiceCount: config.scenarios.length + 1,
+        fulfilmentEnabled: config.fulfilment.enabled,
+      }}
+    />
+  );
 }

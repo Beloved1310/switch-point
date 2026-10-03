@@ -1,22 +1,21 @@
-import { z } from "zod";
-import { ADMIN_COOKIE, checkPassword } from "@/lib/server/auth";
-import { fail, json, parseBody } from "@/lib/server/http";
-import { rateLimited } from "@/lib/server/rateLimit";
+import { AppError } from "@/application/errors";
+import { loginRequest } from "@/contracts/requests";
+import { ADMIN_COOKIE, ADMIN_SESSION_SECONDS, checkPassword } from "@/server/auth";
+import { json, parseBody, route } from "@/server/http";
+import { enforceRateLimit } from "@/server/rateLimit";
 
-const bodySchema = z.object({ password: z.string().min(1).max(200) });
-
-export async function POST(req: Request) {
-  if (rateLimited(req, "login", 5)) return fail("Too many attempts", 429);
-  const body = await parseBody(req, bodySchema);
-  const token = body && checkPassword(body.password);
-  if (!token) return fail("Incorrect password", 401);
+export const POST = route(async (req) => {
+  await enforceRateLimit(req, "login", 5);
+  const { password } = await parseBody(req, loginRequest);
+  const token = checkPassword(password);
+  if (!token) throw new AppError("unauthorised", "Incorrect password");
   const res = json({ ok: true });
   res.cookies.set(ADMIN_COOKIE, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
     path: "/",
-    maxAge: 60 * 60 * 12,
+    maxAge: ADMIN_SESSION_SECONDS,
   });
   return res;
-}
+});
