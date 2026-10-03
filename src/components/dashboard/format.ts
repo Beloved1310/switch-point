@@ -13,9 +13,9 @@ export const interval = (i: [number, number] | null, f: (v: number) => string) =
   i ? `95% interval ${f(i[0])} to ${f(i[1])}` : "no interval yet";
 
 export const PRICE_GAP_LABELS: Record<PriceGap, string> = {
-  matched: "Estimated switch discount matched stated threshold",
-  switched_sooner: "Estimated switch was at a smaller discount than stated",
-  switched_later: "Estimated switch was at a bigger discount than stated",
-  never_switched: "Never switched despite a stated threshold in range",
-  no_price_switch_expected: "Stated threshold above tested range and did not switch",
+  matched: "Switched at the discount they said",
+  switched_sooner: "Switched for less than they said",
+  switched_later: "Needed a bigger discount than they said",
+  never_switched: "Never switched, even at the discount they named",
+  no_price_switch_expected: "Named a discount bigger than we tested, and did not switch",
 };
