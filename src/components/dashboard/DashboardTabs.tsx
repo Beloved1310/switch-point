@@ -31,7 +31,7 @@ export function DashboardTabs({
               aria-controls={`panel-${t.id}`}
               onClick={() => onSelect(t.id)}
               className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                selected ? "bg-white/10 text-ink shadow-sm" : "text-ink-2 hover:bg-white/5 hover:text-ink"
+                selected ? "bg-accent text-white" : "text-ink-2 hover:bg-surface-2 hover:text-ink"
               }`}
             >
               {t.label}

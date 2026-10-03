@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /** Hand-written SVG charts. Colours come from CSS tokens so both themes work. */
 
@@ -37,16 +37,6 @@ function useChartWidth(fallback = 640) {
   return [ref, width] as const;
 }
 
-/** Horizontal gradient for a bar series, from the series colour to its deeper shade. */
-function BarGradient({ id, from, to }: { id: string; from: string; to: string }) {
-  return (
-    <linearGradient id={id} x1="0" x2="1" y1="0" y2="0">
-      <stop offset="0%" stopColor={to} />
-      <stop offset="100%" stopColor={from} />
-    </linearGradient>
-  );
-}
-
 function Tooltip({ text, x, y }: { text: string; x: number; y: number }) {
   return (
     <div
@@ -78,7 +68,6 @@ export function HBarChart({
   title: string;
 }) {
   const [hover, setHover] = useState<{ row: BarRow; x: number; y: number } | null>(null);
-  const gradient = `bar-${useId().replace(/:/g, "")}`;
   const [ref, width] = useChartWidth();
   const narrow = width < NARROW;
   const LABEL_W = narrow ? 0 : Math.min(200, Math.round(width * 0.32));
@@ -98,9 +87,6 @@ export function HBarChart({
         aria-label={title}
         onMouseLeave={() => setHover(null)}
       >
-        <defs>
-          <BarGradient id={gradient} from="var(--series-1)" to="var(--series-1-end)" />
-        </defs>
         {ticks.map((t) => (
           <g key={t}>
             <line
@@ -136,13 +122,14 @@ export function HBarChart({
                 setHover({ row: r, x: e.clientX - box.left, y: e.clientY - box.top });
               }}
             >
+              <title>{r.tooltip}</title>
               <rect x={0} y={y} width={width} height={rowH} fill="transparent" />
               <text x={0} y={narrow ? y + 15 : midY + 4} fontSize={12} fill="var(--text-2)">
                 {r.label}
               </text>
               <rect x={LABEL_W} y={barY} width={plotW} height={barH} rx={barH / 2} fill="var(--grid)" />
               {w > 0 && (
-                <rect x={LABEL_W} y={barY} width={Math.max(w, barH)} height={barH} rx={barH / 2} fill={`url(#${gradient})`} />
+                <rect x={LABEL_W} y={barY} width={Math.max(w, barH)} height={barH} rx={barH / 2} fill="var(--series-1)" />
               )}
               {r.interval && (
                 <g stroke="var(--text)" strokeWidth={1.5} opacity={0.7}>
@@ -200,7 +187,6 @@ export function PairedBarChart({
   title: string;
 }) {
   const [hover, setHover] = useState<{ row: PairRow; x: number; y: number } | null>(null);
-  const id = useId().replace(/:/g, "");
   const [ref, width] = useChartWidth();
   const labelW = width < NARROW ? 84 : 120;
   const rowH = 60;
@@ -222,10 +208,6 @@ export function PairedBarChart({
         </span>
       </div>
       <svg viewBox={`0 0 ${width} ${height}`} className="w-full" role="img" aria-label={title} onMouseLeave={() => setHover(null)}>
-        <defs>
-          <BarGradient id={`${id}-a`} from="var(--series-1)" to="var(--series-1-end)" />
-          <BarGradient id={`${id}-b`} from="var(--series-2)" to="var(--series-2-end)" />
-        </defs>
         {[0, 0.5, 1].map((t) => (
           <g key={t}>
             <line x1={labelW + scale(t)} x2={labelW + scale(t)} y1={0} y2={rows.length * rowH} stroke="var(--grid)" />
@@ -250,12 +232,13 @@ export function PairedBarChart({
                 setHover({ row: r, x: e.clientX - box.left, y: e.clientY - box.top });
               }}
             >
+              <title>{r.tooltip}</title>
               <rect x={0} y={y} width={width} height={rowH} fill="transparent" />
               <text x={0} y={y + rowH / 2 + 4} fontSize={13} fill="var(--text)" className="capitalize">
                 {r.label}
               </text>
-              {bar(r.a, y + 10, `url(#${id}-a)`)}
-              {bar(r.b, y + 32, `url(#${id}-b)`)}
+              {bar(r.a, y + 10, "var(--series-1)")}
+              {bar(r.b, y + 32, "var(--series-2)")}
               <text x={width} y={y + 23} textAnchor="end" fontSize={12} fill="var(--text)">
                 {pct(r.a)}
               </text>

@@ -1,8 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist } from "next/font/google";
 import "./globals.css";
-
-const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
 
 export const metadata: Metadata = {
   title: "SwitchPoint",
@@ -12,14 +9,14 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  colorScheme: "dark",
-  // Matches --bg so the mobile browser bar blends into the page.
-  themeColor: "#06070d",
+  colorScheme: "light",
+  // Matches the warm page background in mobile browser chrome.
+  themeColor: "#f5f5f0",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={geist.variable}>
+    <html lang="en">
       {/* Browser extensions (e.g. Grammarly) inject attributes on <body>. */}
       <body className="min-h-dvh" suppressHydrationWarning>
         {children}
