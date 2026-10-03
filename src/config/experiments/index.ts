@@ -1,5 +1,6 @@
 import type { ExperimentConfig } from "@/domain/experiment/types";
 import { coffeeV1 } from "./coffee-v1";
+import { coffeeV1SyntheticDemo } from "./coffee-v1-synthetic-demo";
 
 /**
  * Every experiment version the app knows about. Old versions stay registered
@@ -8,6 +9,7 @@ import { coffeeV1 } from "./coffee-v1";
  */
 const registry: Record<string, ExperimentConfig> = {
   [coffeeV1.version]: coffeeV1,
+  [coffeeV1SyntheticDemo.version]: coffeeV1SyntheticDemo,
 };
 
 export const ACTIVE_EXPERIMENT_VERSION = coffeeV1.version;
