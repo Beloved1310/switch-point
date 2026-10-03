@@ -11,7 +11,8 @@ import type {
   ParticipantRepository,
   StatedReasonRepository,
 } from "@/application/ports";
-import { isUniqueViolation, publicDb, serviceDb } from "./clients";
+import { unavailable } from "@/application/errors";
+import { isNetworkFailure, isUniqueViolation, publicDb, serviceDb } from "./clients";
 
 /**
  * Supabase implementations of the repository ports.
@@ -22,8 +23,10 @@ import { isUniqueViolation, publicDb, serviceDb } from "./clients";
 const ROW_LIMIT = 10_000;
 const EXPORT_LIMIT = 50_000;
 
-function check(error: { message: string } | null): void {
-  if (error) throw new Error(error.message);
+function check(error: { code?: string; message: string } | null): void {
+  if (!error) return;
+  if (isNetworkFailure(error)) throw unavailable("The database is not responding. Please try again.");
+  throw new Error(error.message);
 }
 
 function insertResult(error: { code?: string; message: string } | null): InsertResult {

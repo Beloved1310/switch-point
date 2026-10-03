@@ -7,7 +7,19 @@ function env(name: string): string {
   return value;
 }
 
-const opts = { auth: { persistSession: false, autoRefreshToken: false } };
+/** Upper bound on any single database call, so a slow database fails fast instead of hanging a request. */
+export const DB_TIMEOUT_MS = 8_000;
+
+const fetchWithTimeout: typeof fetch = (input, init) => {
+  const timeout = AbortSignal.timeout(DB_TIMEOUT_MS);
+  const signal = init?.signal ? AbortSignal.any([init.signal, timeout]) : timeout;
+  return fetch(input, { ...init, signal });
+};
+
+const opts = {
+  auth: { persistSession: false, autoRefreshToken: false },
+  global: { fetch: fetchWithTimeout },
+};
 
 let publicClient: SupabaseClient | null = null;
 let serviceClient: SupabaseClient | null = null;
@@ -31,3 +43,7 @@ export function serviceDb(): SupabaseClient {
 }
 
 export const isUniqueViolation = (error: { code?: string } | null) => error?.code === "23505";
+
+/** supabase-js reports a failed fetch (including our timeout) as an error with no Postgres code. */
+export const isNetworkFailure = (error: { code?: string; message: string } | null) =>
+  Boolean(error && !error.code && /abort|timeout|timed out|fetch failed/i.test(error.message));
