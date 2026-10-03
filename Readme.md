@@ -56,6 +56,8 @@ npm test         # analysis, randomisation and AI grounding tests
 npm run build
 ```
 
+`npm install` also sets up Git hooks with Husky: every commit runs the typecheck and tests, and every push also runs the production build. In an emergency, `git commit --no-verify` (or `git push --no-verify`) skips them.
+
 4. Participants open `/experiment` (or scan the QR code on the dashboard). Retailers sign in at `/admin/login` and use `/dashboard`.
 
 To deploy, import the repo into Vercel and set the same environment variables there.

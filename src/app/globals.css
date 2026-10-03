@@ -1,52 +1,62 @@
 @import "tailwindcss";
 
-/*
- * Navy theme. Every colour in the app comes from these tokens; components use
- * them through the Tailwind names in @theme below (bg-surface, text-ink-2 …)
- * or directly as var(--…). Text tokens meet WCAG AA on --bg and --surface.
- */
+/* Quiet, paper-like palette for a practical retail research dashboard. */
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 
-  /* Surfaces, darkest to lightest */
-  --bg: #0b1324;
-  --surface: #121c33;
-  --surface-2: #1a2643;
-  --surface-3: #22305a;
+  /* Warm neutral surfaces */
+  --bg: #f5f5f0;
+  --surface: #ffffff;
+  --surface-2: #f0f1eb;
+  --surface-3: #e7e9e1;
 
-  /* Lines */
-  --border: #2a3857;
-  --border-strong: #3b4c74;
-  --grid: #223050;
+  /* Flat card treatment */
+  --glass: #ffffff;
+  --glass-strong: #ffffff;
+  --glass-border: #dfe3da;
+  --glass-highlight: transparent;
+
+  /* Lines and chart grid */
+  --border: #dfe3da;
+  --border-strong: #c7cec3;
+  --grid: #e6e9e2;
 
   /* Text */
-  --text: #eef2f8;
-  --text-2: #b4bfd3;
-  --text-3: #8f9cb6;
+  --text: #202a24;
+  --text-2: #4b5a50;
+  --text-3: #647168;
 
-  /* Warm amber accent, matched to the coffee artwork */
-  --accent: #f2a65a;
-  --accent-hover: #ffbb78;
-  --accent-ink: #1a1206;
-  --accent-text: #f5b97a;
-  --accent-soft: rgb(242 166 90 / 0.12);
-  --focus: #ffd29e;
+  /* Coffee leaf green with a restrained ochre comparison colour */
+  --accent: #315f48;
+  --accent-hover: #244b38;
+  --accent-ink: #ffffff;
+  --accent-text: #315f48;
+  --accent-soft: #e8f0ea;
+  --accent-2: #bd7d32;
+  --accent-gradient: #315f48;
+  --glow: none;
+  --focus: #315f48;
 
-  /* Charts: amber and sky blue stay distinct on navy and for colour-blind viewers */
-  --series-1: #f2a65a;
-  --series-2: #6fb3e8;
+  /* Chart colours are solid, distinct, and legible on white */
+  --series-1: #397553;
+  --series-1-end: #397553;
+  --series-2: #b8782d;
+  --series-2-end: #b8782d;
 
-  /* Status and AI panels */
-  --ai-bg: #1b1f3f;
-  --ai-border: #4a4f8c;
-  --warn-bg: #2e2614;
-  --warn-border: #8a6d2a;
-  --good: #5fd08a;
-  --good-soft: rgb(95 208 138 / 0.14);
-  --bad: #ff8a7a;
+  /* Status */
+  --ai-bg: #f2f0e9;
+  --ai-border: #d9d2bd;
+  --warn: #8c5a12;
+  --warn-bg: #fbf4e7;
+  --warn-border: #e4d0a9;
+  --good: #286441;
+  --good-soft: #e8f2eb;
+  --bad: #a3312b;
 
-  --shadow: 0 8px 24px rgb(0 0 0 / 0.35);
-  --shadow-lift: 0 14px 32px rgb(0 0 0 / 0.45);
+  --radius: 12px;
+  --radius-lg: 16px;
+  --shadow: 0 1px 3px rgb(31 43 35 / 0.06);
+  --shadow-lift: 0 3px 12px rgb(31 43 35 / 0.1);
 }
 
 @theme inline {
@@ -59,15 +69,17 @@
   --color-ink-3: var(--text-3);
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
+  --color-accent-text: var(--accent-text);
   --color-series-1: var(--series-1);
   --color-series-2: var(--series-2);
   --color-ai-bg: var(--ai-bg);
   --color-ai-line: var(--ai-border);
+  --color-warn: var(--warn);
   --color-warn-bg: var(--warn-bg);
   --color-warn-line: var(--warn-border);
   --color-good: var(--good);
   --color-bad: var(--bad);
-  --font-sans: Arial, Helvetica, ui-sans-serif, system-ui, sans-serif;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 /* Base */
@@ -187,6 +199,29 @@ h3 {
   color: var(--text-2);
   font-size: 12px;
   letter-spacing: 0.035em;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-link {
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.nav-link:hover {
+  border-color: var(--accent-text);
+  background: var(--good-soft);
 }
 
 .live-dot {
@@ -614,7 +649,7 @@ h3 {
 
 .experiment-shell button:not(.product-choice) {
   min-height: 44px;
-  border-radius: 4px !important;
+  border-radius: 999px !important;
   font-size: 14px !important;
 }
 
@@ -930,11 +965,6 @@ h3 {
   min-height: 40px;
 }
 
-.dashboard-page select,
-.dashboard-page button {
-  border-radius: 3px;
-}
-
 .dashboard-page select {
   background: var(--surface-2);
   color: var(--text);
@@ -955,6 +985,274 @@ h3 {
 
 .dashboard-home-link:hover {
   text-decoration: underline;
+}
+
+/* Shared surfaces and controls */
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.glass,
+.consent-card,
+.stated-form,
+.experiment-complete,
+.dashboard-page .rounded-xl.border {
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius) !important;
+  background: var(--surface) !important;
+  box-shadow: var(--shadow) !important;
+}
+
+/* Compact rounded tab container */
+.glass.pill {
+  border-radius: 10px !important;
+}
+
+/* AI output is neutral and clearly separated from measured results. */
+.dashboard-page .rounded-xl.border.bg-ai-bg {
+  border-color: var(--ai-border) !important;
+  background: var(--ai-bg) !important;
+}
+
+.dashboard-page .rounded-xl.border.bg-warn-bg {
+  border-color: var(--warn-border) !important;
+  background: var(--warn-bg) !important;
+}
+
+.dashboard-page .rounded-lg.border.bg-bg {
+  border-color: var(--glass-border);
+  border-radius: 9px;
+  background: var(--surface-2);
+}
+
+/* Primary actions */
+.button-primary,
+.experiment-button,
+button.bg-accent,
+a.bg-accent {
+  border: 0;
+  border-radius: 8px !important;
+  background: var(--accent) !important;
+  color: var(--accent-ink) !important;
+  font-weight: 600 !important;
+  box-shadow: none;
+  transition: background 0.15s;
+}
+
+.button-primary:hover,
+.experiment-button:hover,
+button.bg-accent:hover:not(:disabled),
+a.bg-accent:hover {
+  background: var(--accent-hover) !important;
+  transform: none;
+  box-shadow: none;
+}
+
+.dashboard-page button.border,
+.dashboard-page select {
+  border-color: var(--border-strong) !important;
+  border-radius: 8px !important;
+  background: var(--surface) !important;
+}
+
+.dashboard-page button.border:hover {
+  background: var(--surface-2) !important;
+}
+
+.dashboard-page select {
+  padding-inline: 12px !important;
+}
+
+.text-gradient {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Gentle entrance for content blocks */
+.dashboard-page [role="tabpanel"] > *,
+.experiment-shell > section,
+.hero-copy,
+.hero-art,
+.login-card {
+  animation: rise 0.45s ease-out both;
+}
+
+.dashboard-page [role="tabpanel"] > *:nth-child(2) {
+  animation-delay: 0.06s;
+}
+
+.dashboard-page [role="tabpanel"] > *:nth-child(3) {
+  animation-delay: 0.12s;
+}
+
+/* Landing page */
+.site-nav {
+  border-bottom: 0;
+}
+
+.wordmark-mark {
+  background: var(--accent);
+  box-shadow: none;
+}
+
+.hero-shell,
+.study-strip {
+  border-bottom: 0;
+}
+
+.hero-copy h1 em {
+  color: var(--accent);
+}
+
+.hero-art {
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-2);
+  box-shadow: var(--shadow);
+}
+
+.hero-art::before {
+  background: radial-gradient(circle, var(--surface-3) 0%, transparent 70%);
+}
+
+.art-orbit {
+  border-color: var(--border-strong);
+}
+
+.art-caption {
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.study-strip {
+  padding-block: 18px;
+}
+
+.study-strip > div {
+  padding: 16px 18px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  background: var(--glass);
+}
+
+.strip-icon {
+  border-color: var(--ai-border);
+  background: var(--accent-soft);
+}
+
+.steps-grid {
+  gap: 16px;
+  border: 0;
+}
+
+.step-card,
+.step-card:first-child {
+  padding: 24px 26px;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius);
+  background: var(--glass);
+  box-shadow: var(--shadow);
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.step-card:hover {
+  transform: none;
+  border-color: var(--border-strong) !important;
+}
+
+.landing-footer {
+  border-top-color: var(--glass-border);
+}
+
+/* Participant experiment */
+.experiment-page {
+  background: transparent;
+}
+
+.experiment-topbar {
+  border-bottom-color: var(--glass-border);
+}
+
+.progress-track {
+  height: 6px;
+  border-radius: 4px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+
+.progress-fill {
+  border-radius: 4px;
+  background: var(--accent);
+  box-shadow: none;
+}
+
+.product-choice {
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius) !important;
+  background: var(--glass) !important;
+}
+
+.product-choice:hover {
+  border-color: var(--accent) !important;
+  box-shadow: var(--shadow-lift) !important;
+}
+
+.product-choice-art {
+  background: var(--surface-2);
+}
+
+.product-choice-badges span {
+  border-color: var(--ai-border);
+  border-radius: 999px;
+  padding: 5px 10px;
+}
+
+.consent-detail div {
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  background: rgb(255 255 255 / 0.03);
+}
+
+.stated-form textarea,
+.stated-form input,
+.login-card input {
+  border: 1px solid var(--glass-border) !important;
+  border-radius: 8px !important;
+  background: var(--surface) !important;
+  color: var(--text);
+}
+
+.stated-form textarea:focus,
+.stated-form input:focus,
+.login-card input:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px var(--accent-soft);
+  outline: none;
+}
+
+/* Research dashboard */
+.dashboard-page > header {
+  border-bottom: 0;
+  padding-bottom: 4px;
+}
+
+.dashboard-page [class*="rounded-xl"].border {
+  border-radius: var(--radius);
+}
+
+.dashboard-page .grid.gap-4 > div.rounded-xl {
+  padding: 20px !important;
 }
 
 /* Tablet and phone */
@@ -1206,5 +1504,6 @@ h3 {
   *::after {
     scroll-behavior: auto !important;
     transition: none !important;
+    animation: none !important;
   }
 }

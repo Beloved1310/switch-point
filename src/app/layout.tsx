@@ -9,9 +9,9 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  colorScheme: "dark",
-  // Matches --bg so the mobile browser bar blends into the page.
-  themeColor: "#0b1324",
+  colorScheme: "light",
+  // Matches the warm page background in mobile browser chrome.
+  themeColor: "#f5f5f0",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

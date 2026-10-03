@@ -1,9 +1,17 @@
 import type { ChoiceRecord } from "@/domain/analysis/analyze";
 import { mulberry32 } from "@/domain/analysis/stats";
 import { BASELINE_SCENARIO_ID } from "@/domain/experiment/types";
+import type { EvidencePacket } from "@/domain/insight/evidence";
 import type { Classification, Suggestion } from "@/domain/insight/types";
 import type { InsightView, ReasonView } from "@/contracts/responses";
 import type { Deps, FulfilmentRecord, NewChoice, ParticipantRecord } from "../ports";
+
+const toSnakeCase = (record: object): Record<string, unknown> =>
+  Object.fromEntries(Object.entries(record).map(([k, v]) => [k.replace(/[A-Z]/g, (c) => `_${c.toLowerCase()}`), v]));
+
+/** Keep only the requested export columns, as the database select does. */
+const pick = (row: Record<string, unknown>, columns: readonly string[]) =>
+  Object.fromEntries(columns.map((c) => [c, row[c] ?? null]));
 
 /**
  * In-memory adapters for every port, so use cases can be tested without
@@ -11,7 +19,7 @@ import type { Deps, FulfilmentRecord, NewChoice, ParticipantRecord } from "../po
  */
 export function createTestDeps(overrides: {
   classify?: (text: string) => Promise<Classification>;
-  suggest?: () => Promise<Suggestion>;
+  suggest?: (evidence: EvidencePacket) => Promise<Suggestion>;
   aiConfigured?: boolean;
   seed?: number;
 } = {}) {
@@ -72,8 +80,20 @@ export function createTestDeps(overrides: {
             baselineProduct: c.baselineProduct,
           }));
       },
-      async exportRows(version) {
-        return choices.filter((c) => c.experimentVersion === version).map((c) => ({ ...c }));
+      async exportRows(version, columns) {
+        return choices
+          .filter((c) => c.experimentVersion === version)
+          .map((c) =>
+            pick(
+              {
+                ...toSnakeCase(c),
+                left_product: c.screen.left.productId,
+                right_product: c.screen.right.productId,
+                created_at: new Date(clock).toISOString(),
+              },
+              columns,
+            ),
+          );
       },
     },
     statedReasons: {
@@ -123,8 +143,10 @@ export function createTestDeps(overrides: {
       async list(version) {
         return [...reasons.values()].filter((r) => r.experimentVersion === version);
       },
-      async exportRows(version) {
-        return [...reasons.values()].filter((r) => r.experimentVersion === version).map((r) => ({ ...r }));
+      async exportRows(version, columns) {
+        return [...reasons.values()]
+          .filter((r) => r.experimentVersion === version)
+          .map((r) => pick({ ...toSnakeCase(r), ai_model: r.aiStatus === "done" ? "test-model" : null }, columns));
       },
     },
     fulfilments: {
