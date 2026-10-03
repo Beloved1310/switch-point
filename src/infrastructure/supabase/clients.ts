@@ -34,6 +34,10 @@ export function serviceDb(): SupabaseClient {
 
 export const isUniqueViolation = (error: { code?: string } | null) => error?.code === "23505";
 
+/** PostgREST cannot see the table or function: the migrations have not been run on this project. */
+export const isMissingTable = (error: { code?: string } | null) =>
+  error?.code === "PGRST205" || error?.code === "PGRST202" || error?.code === "42P01";
+
 /** supabase-js reports a failed fetch (including our timeout) as an error with no Postgres code. */
 export const isNetworkFailure = (error: { code?: string; message: string } | null) =>
   Boolean(error && !error.code && /abort|timeout|timed out|fetch failed/i.test(error.message));

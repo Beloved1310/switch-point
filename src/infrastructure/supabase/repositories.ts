@@ -12,7 +12,7 @@ import type {
   StatedReasonRepository,
 } from "@/application/ports";
 import { unavailable } from "@/application/errors";
-import { isNetworkFailure, isUniqueViolation, serviceDb } from "./clients";
+import { isMissingTable, isNetworkFailure, isUniqueViolation, serviceDb } from "./clients";
 
 /**
  * Supabase implementations of the repository ports.
@@ -26,6 +26,12 @@ const EXPORT_LIMIT = 50_000;
 function check(error: { code?: string; message: string } | null): void {
   if (!error) return;
   if (isNetworkFailure(error)) throw unavailable("The database is not responding. Please try again.");
+  if (isMissingTable(error)) {
+    console.error(
+      `[switchpoint] ${error.message}. Run the SQL files in supabase/migrations/ in order in the Supabase SQL editor.`,
+    );
+    throw unavailable("The study is not set up yet. Please try again later.");
+  }
   throw new Error(error.message);
 }
 
