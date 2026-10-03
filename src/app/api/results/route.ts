@@ -1,10 +1,14 @@
-import { isAdmin } from "@/lib/server/auth";
-import { loadDashboardData } from "@/lib/server/dashboard";
-import { fail, json } from "@/lib/server/http";
+import { z } from "zod";
+import { getDashboard } from "@/application/retailer/getDashboard";
+import { versionQuery } from "@/contracts/requests";
+import { requireAdmin } from "@/server/auth";
+import { container } from "@/server/container";
+import { parseQuery, route } from "@/server/http";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
-  if (!(await isAdmin())) return fail("Unauthorised", 401);
-  return json(await loadDashboardData());
-}
+export const GET = route(async (req) => {
+  await requireAdmin();
+  const { version } = parseQuery(req, z.object({ version: versionQuery }));
+  return getDashboard(container(), version);
+});
