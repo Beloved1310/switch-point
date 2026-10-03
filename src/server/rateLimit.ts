@@ -1,4 +1,5 @@
 import "server-only";
+import { createHmac } from "node:crypto";
 import { AppError } from "@/application/errors";
 import { rateLimitStore } from "@/infrastructure/supabase/rateLimitStore";
 
@@ -39,6 +40,15 @@ export function clientIp(req: Request): string | null {
   return forwarded || null;
 }
 
+/** Store only a keyed digest of the client identifier, never the raw IP. */
+function rateLimitKey(bucket: string, ip: string | null): string {
+  const secret = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!secret) throw new Error("SUPABASE_SERVICE_ROLE_KEY is not set");
+  return createHmac("sha256", secret)
+    .update(`${bucket}:${ip ?? "unknown"}`)
+    .digest("hex");
+}
+
 function hitLocal(key: string, now: number): number {
   const w = windows.get(key);
   if (!w || now - w.start >= WINDOW_MS) {
@@ -57,7 +67,7 @@ export async function enforceRateLimit(req: Request, bucket: string, limit: numb
     warnedUnknownIp = true;
     console.warn("[switchpoint] request has no client IP header; using the shared 'unknown' rate limit bucket");
   }
-  const key = `${bucket}:${ip ?? "unknown"}`;
+  const key = rateLimitKey(bucket, ip);
   const max = ip ? limit : limit * UNKNOWN_CLIENT_MULTIPLIER;
 
   if (hitLocal(key, Date.now()) > max) throw tooMany();

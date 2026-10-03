@@ -57,29 +57,64 @@ export function ObservedSection({ data }: { data: DashboardData }) {
         </Card>
       </div>
 
-      <Card title="Price switch points" n={a.switchPoints.n}>
+      <Card title="Estimated price switch points" n={a.switchPoints.n}>
         <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
           <HBarChart
-            title="Smallest discount at which each participant switched"
+            title="Lowest tested discount with a recorded switch (estimate)"
             max={Math.max(1, ...a.switchPoints.distribution.map((d) => d.count))}
             format={(v) => String(Math.round(v))}
             rows={a.switchPoints.distribution.map((d) => ({
               key: String(d.discount),
-              label: d.discount === null ? "Never switched on price" : `First switched at ${gbp(d.discount)} off`,
+              label: d.discount === null ? "Never switched on price" : `Lowest switch at ${gbp(d.discount)} off`,
               value: d.count,
               n: a.switchPoints.n,
               tooltip:
                 d.discount === null
                   ? `${d.count} participants did not switch at any tested discount`
-                  : `${d.count} participants first switched at ${gbp(d.discount)} off`,
+                  : `${d.count} participants' lowest tested discount with a recorded switch was ${gbp(d.discount)} off`,
             }))}
           />
           <Stat
-            label="Median switch point (switchers)"
+            label="Median estimated switch point (switchers)"
             value={gbp(a.switchPoints.median)}
-            note={interval(a.switchPoints.medianInterval, gbp)}
+            note={`${interval(a.switchPoints.medianInterval, gbp)}. Lowest tested discount with a switch; later choices can differ.`}
           />
         </div>
+        <p className="text-sm text-ink-2" role="note">
+          {a.switchPoints.nonMonotonicCount} of {a.switchPoints.n} complete price patterns were non-monotonic
+          (a participant switched at a lower discount, then chose their baseline product at a higher one).
+          The estimate does not smooth or discard those responses.
+        </p>
+        <details className="rounded-lg border border-line bg-bg p-3">
+          <summary className="cursor-pointer font-medium">Inspect individual price responses</summary>
+          <p className="mb-3 mt-2 text-sm text-ink-2">
+            Responses are listed from the smallest to largest tested discount. IDs are anonymous participant IDs.
+          </p>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[620px] text-left text-sm">
+              <thead>
+                <tr className="border-b border-line text-ink-3">
+                  <th className="p-2 font-medium">Participant</th>
+                  <th className="p-2 font-medium">Pattern</th>
+                  <th className="p-2 font-medium">Price choices (in discount order)</th>
+                  <th className="p-2 font-medium">Estimate</th>
+                </tr>
+              </thead>
+              <tbody>
+                {a.byParticipant.filter((p) => p.priceResponses.length > 0).map((p) => (
+                  <tr key={p.participantId} className="border-b border-line last:border-0">
+                    <td className="p-2 font-mono text-xs" title={p.participantId}>{p.participantId.slice(0, 8)}</td>
+                    <td className="p-2">{p.pricePattern === "non_monotonic" ? "Non-monotonic" : p.pricePattern === "incomplete" ? "Incomplete" : "Consistent"}</td>
+                    <td className="p-2">
+                      {p.priceResponses.map((r) => `${gbp(r.discount)}: ${r.switched ? "switched" : "stayed"}`).join(" · ")}
+                    </td>
+                    <td className="tabular p-2">{gbp(p.observedSwitchPoint)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </details>
       </Card>
     </MeasuredSection>
   );

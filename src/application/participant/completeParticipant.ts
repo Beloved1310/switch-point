@@ -18,7 +18,11 @@ export async function completeParticipant(
     deps.statedReasons.exists(participant.id),
   ]);
   const controlled = choices.filter((c) => c.scenarioId !== BASELINE_SCENARIO_ID);
-  if (controlled.length < participant.plan.order.length || !hasStated) {
+  const completedScenarioIds = new Set(controlled.map((choice) => choice.scenarioId));
+  if (
+    participant.plan.order.some((item) => !completedScenarioIds.has(item.scenarioId)) ||
+    !hasStated
+  ) {
     throw conflict("Experiment not finished");
   }
 
