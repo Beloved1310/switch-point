@@ -23,6 +23,7 @@ export function createTestDeps(overrides: {
   const fingerprints = new Map<string, string>();
   const notifications: string[] = [];
   const deferred: (() => Promise<void>)[] = [];
+  const errors: { context: string; error: unknown }[] = [];
   const random = mulberry32(overrides.seed ?? 42);
   let nextId = 1;
   let clock = Date.UTC(2026, 9, 3);
@@ -103,6 +104,18 @@ export function createTestDeps(overrides: {
           r.aiConfidence = outcome.classification.confidence;
         }
       },
+      async listUnclassified(version, stalledBefore, limit) {
+        return [...reasons.values()]
+          .filter(
+            (r) =>
+              r.experimentVersion === version &&
+              (r.aiStatus === "failed" ||
+                r.aiStatus === "skipped" ||
+                (r.aiStatus === "pending" && new Date(r.createdAt) < stalledBefore)),
+          )
+          .slice(0, limit)
+          .map((r) => ({ participantId: r.participantId, reasonText: r.reasonText }));
+      },
       async setOverride(pid, category) {
         const r = reasons.get(pid);
         if (r) r.overrideCategory = category;
@@ -172,12 +185,15 @@ export function createTestDeps(overrides: {
       defer: (task) => {
         deferred.push(task);
       },
+      reportError: (context, error) => {
+        errors.push({ context, error });
+      },
     },
   };
 
   return {
     deps,
-    store: { participants, choices, reasons, fulfilments, insights, fingerprints, notifications },
+    store: { participants, choices, reasons, fulfilments, insights, fingerprints, notifications, errors },
     /** Run deferred work, as Next.js `after()` would once the response is sent. */
     async flushDeferred() {
       while (deferred.length) await deferred.shift()!();

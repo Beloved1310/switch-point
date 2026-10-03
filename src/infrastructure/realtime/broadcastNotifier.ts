@@ -21,8 +21,9 @@ export const broadcastNotifier: ResultsNotifier = {
         }),
         signal: AbortSignal.timeout(3000),
       });
-    } catch {
+    } catch (error) {
       // Dashboards also poll, so a missed broadcast only delays an update.
+      console.warn("[switchpoint] realtime broadcast failed:", error);
     }
   },
 };

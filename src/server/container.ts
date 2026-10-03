@@ -23,7 +23,9 @@ const nodeRuntime: Runtime = {
   newId: () => randomUUID(),
   now: () => new Date(),
   fingerprint: (text) => createHash("sha256").update(text).digest("hex"),
-  defer: (task) => after(task),
+  defer: (task) =>
+    after(() => task().catch((error) => nodeRuntime.reportError("deferred task", error))),
+  reportError: (context, error) => console.error(`[switchpoint] ${context}:`, error),
 };
 
 let deps: Deps | null = null;

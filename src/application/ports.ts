@@ -78,6 +78,15 @@ export interface StatedReasonRepository {
   }): Promise<InsertResult>;
   exists(participantId: string): Promise<boolean>;
   saveClassification(participantId: string, outcome: ClassificationOutcome): Promise<void>;
+  /**
+   * Reasons that need classifying again: `failed`, `skipped`, or `pending`
+   * since before `stalledBefore` (the deferred task never finished).
+   */
+  listUnclassified(
+    version: string,
+    stalledBefore: Date,
+    limit: number,
+  ): Promise<{ participantId: string; reasonText: string }[]>;
   setOverride(participantId: string, category: ReasonCategory | null, at: Date): Promise<void>;
   list(version: string): Promise<ReasonView[]>;
   exportRows(version: string, columns: readonly string[]): Promise<ExportRow[]>;
@@ -138,6 +147,8 @@ export interface Runtime {
   fingerprint(text: string): string;
   /** Run work after the response is sent; it must not affect the response. */
   defer(task: () => Promise<void>): void;
+  /** Record a failure that was handled (not rethrown), so its cause is not lost. */
+  reportError(context: string, error: unknown): void;
 }
 
 export interface Deps {

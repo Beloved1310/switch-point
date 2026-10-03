@@ -33,19 +33,31 @@ export async function classifyStatedReason(
   participantId: string,
   reasonText: string,
 ): Promise<void> {
+  await classifyAndSave(deps, participantId, reasonText);
+  await deps.notifier.resultsChanged("stated");
+}
+
+/** Classify one reason and store the outcome. Returns the stored status. */
+export async function classifyAndSave(
+  deps: Deps,
+  participantId: string,
+  reasonText: string,
+): Promise<"done" | "failed" | "skipped"> {
   if (!deps.classifier.isConfigured()) {
     await deps.statedReasons.saveClassification(participantId, { status: "skipped" });
-  } else {
-    try {
-      const classification = await deps.classifier.classify(reasonText);
-      await deps.statedReasons.saveClassification(participantId, {
-        status: "done",
-        classification,
-        model: deps.classifier.model,
-      });
-    } catch {
-      await deps.statedReasons.saveClassification(participantId, { status: "failed" });
-    }
+    return "skipped";
   }
-  await deps.notifier.resultsChanged("stated");
+  try {
+    const classification = await deps.classifier.classify(reasonText);
+    await deps.statedReasons.saveClassification(participantId, {
+      status: "done",
+      classification,
+      model: deps.classifier.model,
+    });
+    return "done";
+  } catch (error) {
+    deps.runtime.reportError(`classify reason ${participantId}`, error);
+    await deps.statedReasons.saveClassification(participantId, { status: "failed" });
+    return "failed";
+  }
 }

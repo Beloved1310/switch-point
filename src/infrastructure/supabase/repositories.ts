@@ -193,6 +193,18 @@ export const statedReasonRepository: StatedReasonRepository = {
     check(error);
   },
 
+  async listUnclassified(version, stalledBefore, limit) {
+    const { data, error } = await serviceDb()
+      .from("stated_reasons")
+      .select("participant_id, reason_text")
+      .eq("experiment_version", version)
+      .or(`ai_status.in.(failed,skipped),and(ai_status.eq.pending,created_at.lt.${stalledBefore.toISOString()})`)
+      .order("created_at")
+      .limit(limit);
+    check(error);
+    return (data ?? []).map((s) => ({ participantId: s.participant_id, reasonText: s.reason_text }));
+  },
+
   async setOverride(participantId, category, at) {
     const { error } = await serviceDb()
       .from("stated_reasons")

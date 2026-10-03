@@ -11,24 +11,63 @@ const MAX_ROWS = 200;
 /** Participants' own words with AI categories and admin overrides (FR11, FR12). */
 export function ReasonsTable({ data, onChange }: { data: DashboardData; onChange: () => Promise<void> }) {
   const [saving, setSaving] = useState<string | null>(null);
+  const [retrying, setRetrying] = useState(false);
+  const [message, setMessage] = useState<{ text: string; isError: boolean } | null>(null);
+  const needsRetry = data.reasons.filter((r) => r.aiStatus === "failed" || r.aiStatus === "skipped").length;
 
   async function override(participantId: string, category: ReasonCategory | null) {
     setSaving(participantId);
+    setMessage(null);
     try {
       await adminApi.overrideCategory(participantId, category);
       await onChange();
+    } catch (e) {
+      setMessage({ text: (e as Error).message, isError: true });
     } finally {
       setSaving(null);
     }
   }
 
+  async function retryAi() {
+    setRetrying(true);
+    setMessage(null);
+    try {
+      const { queued } = await adminApi.reclassify(data.experiment.version);
+      setMessage({
+        text: queued ? `Retrying ${queued} reason${queued === 1 ? "" : "s"}. Results appear as they finish.` : "Nothing to retry.",
+        isError: false,
+      });
+    } catch (e) {
+      setMessage({ text: (e as Error).message, isError: true });
+    } finally {
+      setRetrying(false);
+    }
+  }
+
   return (
     <section className="flex flex-col gap-3">
-      <SectionHeader
-        title="Stated reasons"
-        badge={<Badge tone="ai">Categories by AI · editable</Badge>}
-        intro="Participants' own words are never changed. Override a category if the AI got it wrong."
-      />
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <SectionHeader
+          title="Stated reasons"
+          badge={<Badge tone="ai">Categories by AI · editable</Badge>}
+          intro="Participants' own words are never changed. Override a category if the AI got it wrong."
+        />
+        {needsRetry > 0 && (
+          <button
+            type="button"
+            disabled={retrying}
+            onClick={retryAi}
+            className="rounded-lg border border-line px-4 py-2 text-sm font-medium disabled:opacity-60"
+          >
+            {retrying ? "Retrying…" : `Retry AI for ${needsRetry} unclassified`}
+          </button>
+        )}
+      </div>
+      {message && (
+        <p role={message.isError ? "alert" : "status"} className={`text-sm ${message.isError ? "text-bad" : "text-ink-2"}`}>
+          {message.text}
+        </p>
+      )}
       <div className="overflow-x-auto rounded-xl border border-line bg-surface">
         <table className="w-full min-w-[640px] text-left text-sm">
           <thead>

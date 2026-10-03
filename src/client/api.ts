@@ -50,6 +50,7 @@ export const adminApi = {
   results: (version?: string) =>
     request<DashboardData>(withVersion("/api/results", version), { cache: "no-store" }),
   generateInsight: (version?: string) => post<InsightView>(withVersion("/api/admin/insight", version)),
+  reclassify: (version?: string) => post<{ queued: number }>(withVersion("/api/admin/reclassify", version)),
   overrideCategory: (participantId: string, category: ReasonCategory | null) =>
     post<{ ok: true }>("/api/admin/override", { participantId, category }),
   markFulfilled: (participantId: string) => post<{ ok: true }>("/api/admin/fulfil", { participantId }),

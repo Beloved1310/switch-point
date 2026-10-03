@@ -30,7 +30,8 @@ export async function generateInsight(deps: Deps, version?: string): Promise<Ins
           detail: `Suppressed: the AI quoted numbers not in the evidence (${ungrounded.join(", ")}).`,
         }
       : { status: "accepted", suggestion, detail: null };
-  } catch {
+  } catch (error) {
+    deps.runtime.reportError("generate insight", error);
     view = {
       status: "failed",
       suggestion: null,
