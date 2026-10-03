@@ -1,12 +1,12 @@
-import { BASELINE_SCENARIO_ID } from "./config";
-import type {
-  ExperimentConfig,
-  ParticipantPlan,
-  ProductId,
-  ProductView,
-  Scenario,
-  Screen,
-  Side,
+import {
+  BASELINE_SCENARIO_ID,
+  type ExperimentConfig,
+  type ParticipantPlan,
+  type ProductId,
+  type ProductView,
+  type Scenario,
+  type Screen,
+  type Side,
 } from "./types";
 
 export type Random = () => number;

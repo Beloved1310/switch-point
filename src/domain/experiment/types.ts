@@ -1,6 +1,8 @@
 export type ProductId = "A" | "B";
 export type Side = "left" | "right";
 
+/** Scenario id of the first, unmanipulated choice. */
+export const BASELINE_SCENARIO_ID = "baseline";
 /** Behavioural levers that scenarios can manipulate. */
 export type Lever = "price" | "promotion" | "trust";
 

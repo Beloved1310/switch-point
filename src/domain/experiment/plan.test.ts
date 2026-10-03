@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { mulberry32 } from "../analysis/stats";
-import { EXPERIMENT } from "./config";
+import { coffeeV1 as EXPERIMENT } from "@/config/experiments/coffee-v1";
+import { mulberry32 } from "@/domain/analysis/stats";
 import { baselineScreen, createPlan, scenarioScreen, screensForPlan } from "./plan";
 
 describe("createPlan", () => {
