@@ -1,11 +1,16 @@
 import { z } from "zod";
-import { REASON_CATEGORIES } from "../experiment/types";
+import { REASON_CATEGORIES } from "@/domain/experiment/types";
+import type { Classification, Suggestion } from "@/domain/insight/types";
+
+/**
+ * Two views of each AI output: a JSON schema sent to Groq for structured
+ * output, and a Zod schema that re-validates the response (NFR14).
+ */
 
 export const classificationSchema = z.object({
   category: z.enum(REASON_CATEGORIES),
   confidence: z.enum(["low", "medium", "high"]),
-});
-export type Classification = z.infer<typeof classificationSchema>;
+}) satisfies z.ZodType<Classification>;
 
 export const classificationJsonSchema = {
   type: "object",
@@ -33,8 +38,7 @@ export const suggestionSchema = z.object({
     )
     .min(1)
     .max(5),
-});
-export type Suggestion = z.infer<typeof suggestionSchema>;
+}) satisfies z.ZodType<Suggestion>;
 
 export const suggestionJsonSchema = {
   type: "object",
