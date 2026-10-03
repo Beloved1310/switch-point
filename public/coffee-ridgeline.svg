@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="780" viewBox="0 0 480 780" fill="none">
+  <defs><linearGradient id="bag" x1="50" y1="61" x2="429" y2="733" gradientUnits="userSpaceOnUse"><stop stop-color="#506D5D"/><stop offset="1" stop-color="#263F38"/></linearGradient><linearGradient id="shine" x1="95" y1="135" x2="239" y2="664" gradientUnits="userSpaceOnUse"><stop stop-color="#B9CEB0" stop-opacity=".48"/><stop offset="1" stop-color="#B9CEB0" stop-opacity="0"/></linearGradient></defs>
+  <path d="M101 62h278l18 53 28 33-19 514c-1 24-21 43-45 43H119c-24 0-44-19-45-43L55 148l29-33 17-53Z" fill="url(#bag)" stroke="#203830" stroke-width="8" stroke-linejoin="round"/>
+  <path d="m83 114 314 1 17 42-344-2 13-41Z" fill="#203C35"/><path d="M101 62h278l9 47-297-1 10-46Z" fill="#79917A"/>
+  <path d="M88 165h307l-14 456H103L88 165Z" fill="url(#shine)"/>
+  <path d="m169 310 70-102 72 102h-46l-26-36-25 36h-45Z" stroke="#E8E6C8" stroke-width="5" stroke-linejoin="round"/><path d="m184 308-30 39h177l-31-39" stroke="#E8E6C8" stroke-width="4" stroke-linejoin="round"/><path d="M239 208v138" stroke="#E8E6C8" stroke-width="3" opacity=".55"/>
+  <text x="240" y="405" fill="#F3F0D9" font-family="Georgia,serif" font-size="39" text-anchor="middle" letter-spacing="2">RIDGELINE</text>
+  <path d="M164 433h152" stroke="#D4DCC5" stroke-width="2"/><text x="240" y="468" fill="#E6E9D9" font-family="Arial,sans-serif" font-size="15" text-anchor="middle" letter-spacing="4">MEDIUM ROAST</text>
+  <text x="240" y="613" fill="#E8E8D4" font-family="Arial,sans-serif" font-size="16" text-anchor="middle" letter-spacing="4">GROUND COFFEE</text><text x="240" y="650" fill="#E8E8D4" font-family="Arial,sans-serif" font-size="14" text-anchor="middle" letter-spacing="3">227 g · HIGH COUNTRY</text>
+  <path d="M123 674h234" stroke="#203830" stroke-width="3" opacity=".6"/>
+</svg>

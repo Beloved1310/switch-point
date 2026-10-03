@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="780" viewBox="0 0 480 780" fill="none">
+  <defs><linearGradient id="bag" x1="66" y1="76" x2="420" y2="714" gradientUnits="userSpaceOnUse"><stop stop-color="#D58D55"/><stop offset="1" stop-color="#A94F2C"/></linearGradient><linearGradient id="shine" x1="92" y1="125" x2="217" y2="663" gradientUnits="userSpaceOnUse"><stop stop-color="#F8C38C" stop-opacity=".62"/><stop offset="1" stop-color="#F8C38C" stop-opacity="0"/></linearGradient></defs>
+  <path d="M101 62h278l18 53 28 33-19 514c-1 24-21 43-45 43H119c-24 0-44-19-45-43L55 148l29-33 17-53Z" fill="url(#bag)" stroke="#793A24" stroke-width="8" stroke-linejoin="round"/>
+  <path d="m83 114 314 1 17 42-344-2 13-41Z" fill="#783D2B"/><path d="M101 62h278l9 47-297-1 10-46Z" fill="#E3A46D"/>
+  <path d="M88 165h307l-14 456H103L88 165Z" fill="url(#shine)"/>
+  <circle cx="240" cy="273" r="74" stroke="#F8E8CF" stroke-width="4"/><path d="M196 281c17-45 68-56 89-20 18 31-8 66-42 65-27-1-45-23-47-45Z" stroke="#F8E8CF" stroke-width="4"/><path d="M235 226c-13 24-7 40 11 47s34-1 44-18" stroke="#F8E8CF" stroke-width="4"/>
+  <text x="240" y="394" fill="#FFF1DE" font-family="Georgia,serif" font-size="41" text-anchor="middle" letter-spacing="1">HEARTH</text><text x="240" y="435" fill="#FFF1DE" font-family="Georgia,serif" font-size="41" text-anchor="middle" letter-spacing="1">ROAST</text>
+  <path d="M164 459h152" stroke="#F1D6B9" stroke-width="2"/><text x="240" y="492" fill="#FBE8D3" font-family="Arial,sans-serif" font-size="15" text-anchor="middle" letter-spacing="4">MEDIUM ROAST</text>
+  <text x="240" y="613" fill="#FFEED8" font-family="Arial,sans-serif" font-size="16" text-anchor="middle" letter-spacing="4">GROUND COFFEE</text><text x="240" y="650" fill="#FFEED8" font-family="Arial,sans-serif" font-size="14" text-anchor="middle" letter-spacing="3">227 g · EST. 2018</text>
+  <path d="M123 674h234" stroke="#803D26" stroke-width="3" opacity=".6"/>
+</svg>
