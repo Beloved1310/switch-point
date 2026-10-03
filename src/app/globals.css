@@ -1,52 +1,67 @@
 @import "tailwindcss";
 
 /*
- * Navy theme. Every colour in the app comes from these tokens; components use
- * them through the Tailwind names in @theme below (bg-surface, text-ink-2 …)
- * or directly as var(--…). Text tokens meet WCAG AA on --bg and --surface.
+ * Midnight theme with violet and cyan glow, in the style of modern AI tools.
+ * Every colour in the app comes from these tokens; components use them through
+ * the Tailwind names in @theme below (bg-surface, text-ink-2 …) or directly as
+ * var(--…). Text tokens meet WCAG AA on --bg and --surface.
  */
 :root {
   color-scheme: dark;
 
   /* Surfaces, darkest to lightest */
-  --bg: #0b1324;
-  --surface: #121c33;
-  --surface-2: #1a2643;
-  --surface-3: #22305a;
+  --bg: #06070d;
+  --surface: #0e1120;
+  --surface-2: #151a2e;
+  --surface-3: #1d2340;
+
+  /* Frosted glass for cards over the glowing background */
+  --glass: rgb(18 22 42 / 0.6);
+  --glass-strong: rgb(22 27 52 / 0.78);
+  --glass-border: rgb(255 255 255 / 0.08);
+  --glass-highlight: rgb(255 255 255 / 0.05);
 
   /* Lines */
-  --border: #2a3857;
-  --border-strong: #3b4c74;
-  --grid: #223050;
+  --border: #232a45;
+  --border-strong: #343d63;
+  --grid: rgb(255 255 255 / 0.06);
 
   /* Text */
-  --text: #eef2f8;
-  --text-2: #b4bfd3;
-  --text-3: #8f9cb6;
+  --text: #f1f3fb;
+  --text-2: #aab2cc;
+  --text-3: #8b93ad;
 
-  /* Warm amber accent, matched to the coffee artwork */
-  --accent: #f2a65a;
-  --accent-hover: #ffbb78;
-  --accent-ink: #1a1206;
-  --accent-text: #f5b97a;
-  --accent-soft: rgb(242 166 90 / 0.12);
-  --focus: #ffd29e;
+  /* Violet to cyan accent */
+  --accent: #8b7cff;
+  --accent-hover: #a597ff;
+  --accent-ink: #0b0820;
+  --accent-text: #b8aeff;
+  --accent-soft: rgb(139 124 255 / 0.14);
+  --accent-2: #38d9f5;
+  --accent-gradient: linear-gradient(135deg, #8b7cff 0%, #5fa4ff 55%, #38d9f5 100%);
+  --glow: 0 10px 30px -10px rgb(139 124 255 / 0.65);
+  --focus: #c9c1ff;
 
-  /* Charts: amber and sky blue stay distinct on navy and for colour-blind viewers */
-  --series-1: #f2a65a;
-  --series-2: #6fb3e8;
+  /* Charts: violet and cyan stay distinct on dark and for colour-blind viewers */
+  --series-1: #a594ff;
+  --series-1-end: #7c6cf5;
+  --series-2: #4fd8f0;
+  --series-2-end: #2ba6d6;
 
   /* Status and AI panels */
-  --ai-bg: #1b1f3f;
-  --ai-border: #4a4f8c;
-  --warn-bg: #2e2614;
-  --warn-border: #8a6d2a;
-  --good: #5fd08a;
-  --good-soft: rgb(95 208 138 / 0.14);
-  --bad: #ff8a7a;
+  --ai-bg: rgb(98 76 220 / 0.14);
+  --ai-border: rgb(165 148 255 / 0.38);
+  --warn: #f5b450;
+  --warn-bg: rgb(245 180 80 / 0.08);
+  --warn-border: rgb(245 180 80 / 0.32);
+  --good: #4ade9b;
+  --good-soft: rgb(74 222 155 / 0.14);
+  --bad: #ff8a8a;
 
-  --shadow: 0 8px 24px rgb(0 0 0 / 0.35);
-  --shadow-lift: 0 14px 32px rgb(0 0 0 / 0.45);
+  --radius: 18px;
+  --radius-lg: 24px;
+  --shadow: 0 1px 0 var(--glass-highlight) inset, 0 24px 48px -24px rgb(0 0 0 / 0.7);
+  --shadow-lift: 0 1px 0 var(--glass-highlight) inset, 0 30px 60px -24px rgb(0 0 0 / 0.8);
 }
 
 @theme inline {
@@ -59,15 +74,17 @@
   --color-ink-3: var(--text-3);
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
+  --color-accent-text: var(--accent-text);
   --color-series-1: var(--series-1);
   --color-series-2: var(--series-2);
   --color-ai-bg: var(--ai-bg);
   --color-ai-line: var(--ai-border);
+  --color-warn: var(--warn);
   --color-warn-bg: var(--warn-bg);
   --color-warn-line: var(--warn-border);
   --color-good: var(--good);
   --color-bad: var(--bad);
-  --font-sans: Arial, Helvetica, ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 /* Base */
@@ -82,7 +99,12 @@ html {
 
 body {
   margin: 0;
-  background: var(--bg);
+  background:
+    radial-gradient(60rem 40rem at 8% -12%, rgb(139 124 255 / 0.2), transparent 60%),
+    radial-gradient(48rem 34rem at 100% 0%, rgb(56 217 245 / 0.12), transparent 62%),
+    radial-gradient(44rem 30rem at 50% 115%, rgb(139 124 255 / 0.1), transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
   color: var(--text);
   font-family: var(--font-sans);
   font-size: 16px;
@@ -187,6 +209,29 @@ h3 {
   color: var(--text-2);
   font-size: 12px;
   letter-spacing: 0.035em;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-link {
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.nav-link:hover {
+  border-color: var(--accent-text);
+  background: var(--good-soft);
 }
 
 .live-dot {
@@ -614,7 +659,7 @@ h3 {
 
 .experiment-shell button:not(.product-choice) {
   min-height: 44px;
-  border-radius: 4px !important;
+  border-radius: 999px !important;
   font-size: 14px !important;
 }
 
@@ -930,11 +975,6 @@ h3 {
   min-height: 40px;
 }
 
-.dashboard-page select,
-.dashboard-page button {
-  border-radius: 3px;
-}
-
 .dashboard-page select {
   background: var(--surface-2);
   color: var(--text);
@@ -955,6 +995,293 @@ h3 {
 
 .dashboard-home-link:hover {
   text-decoration: underline;
+}
+
+/* Modern glass layer: rounded frosted cards, gradient pills and gentle motion */
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.glass,
+.consent-card,
+.stated-form,
+.experiment-complete,
+.dashboard-page .rounded-xl.border {
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius) !important;
+  background: var(--glass) !important;
+  box-shadow: var(--shadow) !important;
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+}
+
+/* Pill-shaped glass, e.g. the dashboard tab switcher */
+.glass.pill {
+  border-radius: 999px !important;
+}
+
+/* AI panels keep a violet tint so they stay visibly separate from measured results. */
+.dashboard-page .rounded-xl.border.bg-ai-bg {
+  border-color: var(--ai-border) !important;
+  background:
+    linear-gradient(135deg, rgb(139 124 255 / 0.16), rgb(56 217 245 / 0.06)),
+    var(--glass) !important;
+}
+
+.dashboard-page .rounded-xl.border.bg-warn-bg {
+  border-color: var(--warn-border) !important;
+  background: linear-gradient(var(--warn-bg), var(--warn-bg)), var(--glass) !important;
+}
+
+.dashboard-page .rounded-lg.border.bg-bg {
+  border-color: var(--glass-border);
+  border-radius: 14px;
+  background: rgb(6 7 13 / 0.45);
+}
+
+/* Primary actions: gradient pills with a soft glow */
+.button-primary,
+.experiment-button,
+button.bg-accent,
+a.bg-accent {
+  border: 0;
+  border-radius: 999px !important;
+  background: var(--accent-gradient) !important;
+  color: var(--accent-ink) !important;
+  font-weight: 600 !important;
+  box-shadow: var(--glow);
+  transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+}
+
+.button-primary:hover,
+.experiment-button:hover,
+button.bg-accent:hover:not(:disabled),
+a.bg-accent:hover {
+  background: var(--accent-gradient) !important;
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+  box-shadow: 0 14px 34px -10px rgb(139 124 255 / 0.8);
+}
+
+.dashboard-page button.border,
+.dashboard-page select {
+  border-color: var(--glass-border) !important;
+  border-radius: 999px !important;
+  background: rgb(255 255 255 / 0.04);
+}
+
+.dashboard-page button.border:hover {
+  background: rgb(255 255 255 / 0.08);
+}
+
+.dashboard-page select {
+  padding-inline: 12px !important;
+}
+
+.text-gradient {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Gentle entrance for content blocks */
+.dashboard-page [role="tabpanel"] > *,
+.experiment-shell > section,
+.hero-copy,
+.hero-art,
+.login-card {
+  animation: rise 0.45s ease-out both;
+}
+
+.dashboard-page [role="tabpanel"] > *:nth-child(2) {
+  animation-delay: 0.06s;
+}
+
+.dashboard-page [role="tabpanel"] > *:nth-child(3) {
+  animation-delay: 0.12s;
+}
+
+/* Landing page */
+.site-nav {
+  border-bottom: 0;
+}
+
+.wordmark-mark {
+  background: var(--accent-gradient);
+  box-shadow: var(--glow);
+}
+
+.hero-shell,
+.study-strip {
+  border-bottom: 0;
+}
+
+.hero-copy h1 em {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero-art {
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(circle at 30% 20%, rgb(139 124 255 / 0.22), transparent 55%),
+    radial-gradient(circle at 80% 85%, rgb(56 217 245 / 0.16), transparent 55%),
+    var(--glass);
+  box-shadow: var(--shadow-lift);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.hero-art::before {
+  background: radial-gradient(circle, rgb(139 124 255 / 0.28) 0%, transparent 70%);
+}
+
+.art-orbit {
+  border-color: rgb(255 255 255 / 0.1);
+}
+
+.art-caption {
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  background: rgb(10 12 24 / 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.study-strip {
+  padding-block: 18px;
+}
+
+.study-strip > div {
+  padding: 16px 18px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  background: var(--glass);
+}
+
+.strip-icon {
+  border-color: var(--ai-border);
+  background: var(--accent-soft);
+}
+
+.steps-grid {
+  gap: 16px;
+  border: 0;
+}
+
+.step-card,
+.step-card:first-child {
+  padding: 24px 26px;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius);
+  background: var(--glass);
+  box-shadow: var(--shadow);
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.step-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--ai-border) !important;
+}
+
+.landing-footer {
+  border-top-color: var(--glass-border);
+}
+
+/* Participant experiment */
+.experiment-page {
+  background: transparent;
+}
+
+.experiment-topbar {
+  border-bottom-color: var(--glass-border);
+}
+
+.progress-track {
+  height: 6px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.07);
+  overflow: hidden;
+}
+
+.progress-fill {
+  border-radius: 999px;
+  background: var(--accent-gradient);
+  box-shadow: 0 0 14px rgb(139 124 255 / 0.6);
+}
+
+.product-choice {
+  border: 1px solid var(--glass-border) !important;
+  border-radius: 22px !important;
+  background: var(--glass) !important;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.product-choice:hover {
+  border-color: var(--ai-border) !important;
+  box-shadow: var(--shadow-lift), 0 0 0 1px rgb(139 124 255 / 0.35), 0 20px 50px -20px rgb(139 124 255 / 0.5) !important;
+}
+
+.product-choice-art {
+  background:
+    radial-gradient(circle at 50% 45%, rgb(139 124 255 / 0.22) 0%, transparent 65%),
+    rgb(255 255 255 / 0.02);
+}
+
+.product-choice-badges span {
+  border-color: var(--ai-border);
+  border-radius: 999px;
+  padding: 5px 10px;
+}
+
+.consent-detail div {
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  background: rgb(255 255 255 / 0.03);
+}
+
+.stated-form textarea,
+.stated-form input,
+.login-card input {
+  border: 1px solid var(--glass-border) !important;
+  border-radius: 14px !important;
+  background: rgb(6 7 13 / 0.55) !important;
+  color: var(--text);
+}
+
+.stated-form textarea:focus,
+.stated-form input:focus,
+.login-card input:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 4px var(--accent-soft);
+  outline: none;
+}
+
+/* Research dashboard */
+.dashboard-page > header {
+  border-bottom: 0;
+  padding-bottom: 4px;
+}
+
+.dashboard-page [class*="rounded-xl"].border {
+  border-radius: var(--radius);
+}
+
+.dashboard-page .grid.gap-4 > div.rounded-xl {
+  padding: 20px !important;
 }
 
 /* Tablet and phone */
@@ -1206,5 +1533,6 @@ h3 {
   *::after {
     scroll-behavior: auto !important;
     transition: none !important;
+    animation: none !important;
   }
 }
