@@ -37,11 +37,14 @@ export function DashboardHeader({
         </div>
         <h1 className="mt-1 text-2xl font-semibold tracking-tight">{experiment.category}</h1>
       </div>
-      <div className="flex items-center gap-4 text-sm text-ink-2">
+      <div className="flex flex-wrap items-center gap-4 text-sm text-ink-2">
         <span className="flex items-center gap-2" aria-live="polite">
           <span className={`h-2 w-2 rounded-full ${live ? "bg-good" : "bg-ink-3"}`} aria-hidden />
           {live ? "Live" : "Refreshing every 15s"}
         </span>
+        <Link href="/experiment" target="_blank" className="dashboard-home-link">
+          Preview study ↗
+        </Link>
         <button
           type="button"
           className="underline"

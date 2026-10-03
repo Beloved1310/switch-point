@@ -12,8 +12,11 @@ export default function Home() {
     <main className="landing-page">
       <nav className="site-nav" aria-label="Main navigation">
         <Link className="wordmark" href="/" aria-label="SwitchPoint home"><span className="wordmark-mark">S</span> switchpoint<span className="wordmark-period">.</span></Link>
-        <span className="nav-note"><span className="live-dot" /> A little research, a better cup
-        </span>
+        <div className="nav-actions">
+          <span className="nav-note"><span className="live-dot" /> A little research, a better cup
+          </span>
+          <Link className="nav-link" href="/dashboard">Retailer dashboard <span aria-hidden>↗</span></Link>
+        </div>
       </nav>
 
       <section className="hero-shell">
