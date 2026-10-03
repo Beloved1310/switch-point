@@ -1,30 +1,36 @@
 "use client";
 
 import { useState } from "react";
+import { adminApi } from "@/client/api";
+import { Button } from "@/components/ui/Button";
 
 export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
+  async function submit() {
     setBusy(true);
     setError(null);
-    const res = await fetch("/api/admin/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password }),
-    });
-    setBusy(false);
-    if (res.ok) window.location.href = "/dashboard";
-    else setError((await res.json().catch(() => ({}))).error ?? "Sign-in failed");
+    try {
+      await adminApi.login(password);
+      window.location.href = "/dashboard";
+    } catch (err) {
+      setError((err as Error).message);
+      setBusy(false);
+    }
   }
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-sm flex-col justify-center gap-6 px-4">
       <h1 className="text-2xl font-semibold tracking-tight">Retailer sign-in</h1>
-      <form onSubmit={submit} className="flex flex-col gap-3">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          submit();
+        }}
+        className="flex flex-col gap-3"
+      >
         <label htmlFor="password" className="font-medium">
           Password
         </label>
@@ -42,13 +48,9 @@ export default function LoginPage() {
             {error}
           </p>
         )}
-        <button
-          type="submit"
-          disabled={busy}
-          className="rounded-lg bg-accent px-5 py-3 font-medium text-accent-ink disabled:opacity-60"
-        >
+        <Button type="submit" disabled={busy}>
           {busy ? "Signing in…" : "Sign in"}
-        </button>
+        </Button>
       </form>
     </main>
   );
