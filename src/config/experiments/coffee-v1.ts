@@ -1,11 +1,11 @@
-import type { ExperimentConfig } from "./types";
+import type { ExperimentConfig } from "@/domain/experiment/types";
 
 /**
- * The live experiment definition. Once data collection starts, any change to
- * products or scenarios must ship under a new `version` (NFR5, NFR6). The
- * server refuses to run if the stored config for this version differs.
+ * Ground coffee switching experiment. Once data collection starts, any change
+ * to products or scenarios must ship as a new config with a new `version`
+ * (NFR5, NFR6); the server refuses to run a changed config under an old version.
  */
-export const EXPERIMENT: ExperimentConfig = {
+export const coffeeV1: ExperimentConfig = {
   version: "v1",
   category: "Ground coffee, 227g",
   currency: "GBP",
@@ -76,5 +76,3 @@ export const EXPERIMENT: ExperimentConfig = {
     rule: "One controlled choice per participant is drawn uniformly at random by the server; the chosen product in that round is the one honoured.",
   },
 };
-
-export const BASELINE_SCENARIO_ID = "baseline";
