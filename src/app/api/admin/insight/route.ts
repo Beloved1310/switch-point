@@ -8,7 +8,7 @@ import { enforceRateLimit } from "@/server/rateLimit";
 
 export const POST = route(async (req) => {
   await requireAdmin();
-  enforceRateLimit(req, "insight", 5);
+  await enforceRateLimit(req, "insight", 5);
   const { version } = parseQuery(req, z.object({ version: versionQuery }));
   return generateInsight(container(), version);
 });

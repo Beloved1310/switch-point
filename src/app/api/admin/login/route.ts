@@ -5,7 +5,7 @@ import { json, parseBody, route } from "@/server/http";
 import { enforceRateLimit } from "@/server/rateLimit";
 
 export const POST = route(async (req) => {
-  enforceRateLimit(req, "login", 5);
+  await enforceRateLimit(req, "login", 5);
   const { password } = await parseBody(req, loginRequest);
   const token = checkPassword(password);
   if (!token) throw new AppError("unauthorised", "Incorrect password");

@@ -5,6 +5,6 @@ import { parseBody, route } from "@/server/http";
 import { enforceRateLimit } from "@/server/rateLimit";
 
 export const POST = route(async (req) => {
-  enforceRateLimit(req, "complete", 10);
+  await enforceRateLimit(req, "complete", 10);
   return completeParticipant(container(), await parseBody(req, participantRequest));
 });
