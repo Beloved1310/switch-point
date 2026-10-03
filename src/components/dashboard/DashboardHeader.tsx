@@ -2,6 +2,7 @@
 
 import { adminApi } from "@/client/api";
 import type { ExperimentSummary } from "@/contracts/responses";
+import Link from "next/link";
 
 export function DashboardHeader({
   experiment,
@@ -16,7 +17,9 @@ export function DashboardHeader({
     <header className="flex flex-wrap items-end justify-between gap-4">
       <div>
         <div className="flex items-center gap-2 text-sm font-medium text-ink-3">
-          <span>SwitchPoint · experiment</span>
+          <Link href="/" className="dashboard-home-link">SwitchPoint home</Link>
+          <span aria-hidden="true">/</span>
+          <span>Experiment</span>
           {versions.length > 1 ? (
             <select
               aria-label="Experiment version"
