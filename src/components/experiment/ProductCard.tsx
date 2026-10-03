@@ -1,4 +1,5 @@
-import type { ProductView } from "@/lib/experiment/types";
+import type { ProductView } from "@/domain/experiment/types";
+import Image from "next/image";
 
 export const formatPrice = (n: number) => `£${n.toFixed(2)}`;
 
@@ -23,20 +24,16 @@ export function ProductCard({
       onClick={onChoose}
       disabled={disabled}
       aria-label={`Choose ${describeProduct(product)}`}
-      className="flex min-h-56 flex-1 flex-col items-stretch gap-3 rounded-xl border border-line bg-surface p-4 text-left shadow-sm transition hover:border-accent active:scale-[0.99] disabled:opacity-60"
+      className="product-choice flex min-h-56 flex-1 flex-col items-stretch text-left disabled:opacity-60"
     >
-      <div
-        aria-hidden
-        className="flex h-20 items-center justify-center rounded-lg bg-surface-2 text-2xl font-semibold text-ink-3"
-      >
-        {product.name.slice(0, 1)}
+      <div className="product-choice-art" aria-hidden="true">
+        <Image src={product.productId === "A" ? "/coffee-hearth.svg" : "/coffee-ridgeline.svg"} alt="" width={160} height={260} />
       </div>
-      <div>
-        <p className="font-semibold">{product.name}</p>
-        <p className="text-sm text-ink-2">{product.description}</p>
-      </div>
-      <p className="tabular text-2xl font-semibold">{formatPrice(product.price)}</p>
-      <div className="mt-auto flex min-h-7 flex-wrap gap-2">
+      <span className="product-choice-details">
+        <span className="product-choice-name">{product.name}</span>
+        <span className="product-choice-description">{product.description}</span>
+        <span className="product-choice-price tabular">{formatPrice(product.price)}</span>
+      <span className="product-choice-badges">
         {product.promotion && (
           <span className="rounded-md border border-line bg-surface-2 px-2 py-1 text-xs font-medium">
             {product.promotion}
@@ -47,7 +44,8 @@ export function ProductCard({
             ★ {product.trustBadge}
           </span>
         )}
-      </div>
+      </span>
+      </span>
     </button>
   );
 }
