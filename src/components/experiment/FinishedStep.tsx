@@ -3,7 +3,8 @@ import { StepHeading } from "../ui/StepHeading";
 
 export function DoneStep({ headingRef, reward }: { headingRef: React.Ref<HTMLHeadingElement>; reward: Reward | null }) {
   return (
-    <section className="flex flex-col gap-4">
+    <section className="experiment-complete flex flex-col gap-4">
+      <span className="complete-icon" aria-hidden="true">✓</span>
       <StepHeading ref={headingRef}>Thank you</StepHeading>
       <p className="text-ink-2">Your answers have been recorded.</p>
       {reward && (
@@ -21,7 +22,8 @@ export function DoneStep({ headingRef, reward }: { headingRef: React.Ref<HTMLHea
 
 export function AlreadyTakenPartStep({ headingRef }: { headingRef: React.Ref<HTMLHeadingElement> }) {
   return (
-    <section className="flex flex-col gap-3">
+    <section className="experiment-complete flex flex-col gap-3">
+      <span className="complete-icon" aria-hidden="true">✓</span>
       <StepHeading ref={headingRef}>You have already taken part</StepHeading>
       <p className="text-ink-2">Thanks. Each person can take part once.</p>
     </section>

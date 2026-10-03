@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Link from "next/link";
 import { ErrorBanner } from "./ErrorBanner";
 import { ChoiceStep } from "./ChoiceStep";
 import { ConsentStep } from "./ConsentStep";
@@ -36,7 +37,7 @@ export function ExperimentFlow({ intro }: { intro: ExperimentIntro }) {
     <main className="experiment-page">
       <div className="experiment-shell">
       <header className="experiment-topbar">
-        <p className="experiment-brand">switchpoint<span>.</span></p>
+        <Link className="experiment-brand" href="/" aria-label="SwitchPoint home">switchpoint<span>.</span></Link>
         <span className="experiment-top-meta">Shopper choice study · Coffee</span>
       </header>
       {session && made !== null && <ProgressBar done={made} total={session.totalChoices} />}
