@@ -67,7 +67,7 @@ export const EXPERIMENT: ExperimentConfig = {
     {
       id: "price_020_promo",
       levers: ["price", "promotion"],
-      label: "£0.20 cheaper + 20% extra free",
+      label: "£0.20 off + 20% extra free",
       condition: { priceDiscount: 0.2, promotion: "20% extra free", trustBadge: null },
     },
   ],
