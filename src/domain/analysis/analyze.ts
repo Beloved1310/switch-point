@@ -40,6 +40,9 @@ export interface ParticipantSayDo {
   participantId: string;
   statedThreshold: number | null;
   observedSwitchPoint: number | null;
+  /** Full tested price response pattern, ordered from smallest discount. */
+  priceResponses: { discount: number; switched: boolean }[];
+  pricePattern: "consistent" | "non_monotonic" | "incomplete";
   priceGap: PriceGap | null;
   statedCategory: ReasonCategory | null;
   /** Levers the participant actually switched on in single-lever scenarios. */
@@ -62,6 +65,7 @@ export interface Analysis {
   conditions: ConditionResult[];
   switchPoints: Measured & {
     distribution: { discount: number | null; count: number }[];
+    nonMonotonicCount: number;
     median: number | null;
     medianInterval: Interval | null;
   };
@@ -91,8 +95,9 @@ const LEVERS: Lever[] = ["price", "promotion", "trust"];
 const measured = (n: number): Measured => ({ n, directional: n < DIRECTIONAL_THRESHOLD });
 
 /**
- * Observed price switch point: the smallest tested discount at which the
- * participant chose the alternative, or null if they never did (FR13).
+ * Estimated switch point: the smallest tested discount at which the
+ * participant chose the alternative. This does not assume later choices
+ * remain switched; callers must retain and show the full response pattern.
  */
 export function priceSwitchPoint(
   priceOutcomes: { discount: number; switched: boolean }[],
@@ -175,8 +180,16 @@ export function analyze(
       const s = priceScenarios.find((p) => p.id === c.scenarioId);
       return s ? [{ discount: s.condition.priceDiscount, switched: switchedOf(c) }] : [];
     });
-    const answeredAllPrice = priceOutcomes.length === priceScenarios.length;
-    const observed = answeredAllPrice ? priceSwitchPoint(priceOutcomes) : null;
+    const orderedPriceOutcomes = priceOutcomes.sort((a, b) => a.discount - b.discount);
+    const answeredAllPrice = priceScenarios.every((s) =>
+      orderedPriceOutcomes.some((o) => o.discount === s.condition.priceDiscount),
+    );
+    let sawSwitch = false;
+    const nonMonotonic = answeredAllPrice && orderedPriceOutcomes.some((o) => {
+      if (o.switched) sawSwitch = true;
+      return sawSwitch && !o.switched;
+    });
+    const observed = answeredAllPrice ? priceSwitchPoint(orderedPriceOutcomes) : null;
 
     const switchedOn = new Set<Lever>();
     for (const c of mine) {
@@ -193,6 +206,8 @@ export function analyze(
       participantId: pid,
       statedThreshold,
       observedSwitchPoint: observed,
+      priceResponses: orderedPriceOutcomes,
+      pricePattern: !answeredAllPrice ? "incomplete" : nonMonotonic ? "non_monotonic" : "consistent",
       priceGap:
         statedThreshold !== null && answeredAllPrice
           ? classifyPriceGap(statedThreshold, observed, testedDiscounts)
@@ -278,6 +293,7 @@ export function analyze(
     conditions,
     switchPoints: {
       distribution,
+      nonMonotonicCount: withPoints.filter((p) => p.pricePattern === "non_monotonic").length,
       median: median(observedPoints),
       medianInterval: bootstrapInterval(observedPoints, median, { seed: 7 }),
       ...measured(withPoints.length),

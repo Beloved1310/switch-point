@@ -33,9 +33,9 @@ export function SayDoSection({ data }: { data: DashboardData }) {
             note={interval(a.stated.medianThresholdInterval, gbp)}
           />
           <Stat
-            label="Average gap, observed minus stated"
+            label="Average estimated gap, observed minus stated"
             value={signedGbp(a.sayDo.meanPriceGap)}
-            note={`Positive means they needed more than they said. ${interval(a.sayDo.meanPriceGapInterval, (v) => `£${v.toFixed(2)}`)}`}
+            note={`Observed uses the lowest tested discount with a switch. Positive means it exceeded what they said. ${interval(a.sayDo.meanPriceGapInterval, (v) => `£${v.toFixed(2)}`)}`}
           />
           <Stat
             label="Acted on their stated lever"
