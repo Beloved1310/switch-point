@@ -38,7 +38,67 @@ SwitchPoint runs controlled A/B product-choice experiments to measure what actua
 | `NEXT_PUBLIC_SUPABASE_URL` | Public |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public (insert-only via RLS) |
 | `SUPABASE_SERVICE_ROLE_KEY` | Server only |
-| `GROQ_API_KEY` | Server only |
+| `GROQ_API_KEY` | Server only. Optional: without it, AI steps are skipped and everything else works. |
+| `GROQ_MODEL` | Server only. Defaults to `openai/gpt-oss-20b` (supports strict JSON schema). |
+| `ADMIN_PASSWORD` | Server only. Protects the dashboard, overrides, insights and export. |
+| `NEXT_PUBLIC_APP_URL` | Base URL encoded in the QR code. Falls back to the request host. |
+
+## Getting Started
+
+1. Create a Supabase project and run [supabase/migrations/0001_init.sql](supabase/migrations/0001_init.sql) in the SQL editor.
+2. Copy `.env.example` to `.env.local` and fill in the values.
+3. Install and run:
+
+```bash
+npm install
+npm run dev      # http://localhost:3000
+npm test         # analysis, randomisation and AI grounding tests
+npm run build
+```
+
+4. Participants open `/experiment` (or scan the QR code on the dashboard). Retailers sign in at `/admin/login` and use `/dashboard`.
+
+To deploy, import the repo into Vercel and set the same environment variables there.
+
+## How It Works
+
+**Participant flow.** Consent → baseline choice (identical products) → stated reason and price threshold → seven controlled choices, or the choices first and the reason after (randomised) → completion and, if enabled, a random draw of one round to honour.
+
+**Experiment design.** [src/lib/experiment/config.ts](src/lib/experiment/config.ts) defines the products and scenarios. Each scenario changes only the alternative product, which is the one the participant did not pick at baseline. The current set covers four price discounts, a promotion, a trust badge and one price + promotion combination. If the config changes under an existing version, the server refuses to run. Bump `version` to start a new experiment.
+
+**Randomisation.** The server creates each participant's plan with a cryptographic RNG: scenario order, which side the baseline product appears on, and say-first or do-first. The browser sends only `left` or `right`. The server works out the product, price and position from the stored plan and records them.
+
+**Storage and security.** Public writes go through the anon key, and RLS lets it insert and nothing else. The `participant_exists()` check stops inserts for unknown participants or with a preset AI label. Reads, AI updates and admin actions use the service role on the server only. Unique constraints make repeated submissions safe to retry. A per-IP limiter blocks bursts.
+
+**Analysis.** [src/lib/analysis/analyze.ts](src/lib/analysis/analyze.ts) is pure TypeScript with no UI or AI dependencies. It calculates:
+- switch rate per condition, with 95% percentile bootstrap intervals
+- each participant's price switch point, which is the smallest tested discount at which they switched
+- say vs do: the stated threshold compared with the observed switch point, and the stated reason category compared with the levers the participant actually switched on
+- a left/right position-bias check
+
+Any result based on fewer than 30 participants is marked directional.
+
+**AI.** Classification runs after the response is stored, using Next.js `after()`, so a slow or failed call never blocks a participant. The next-experiment suggestion runs only when the retailer clicks the button. It sees only the evidence packet ([src/lib/ai/evidence.ts](src/lib/ai/evidence.ts)). Its output is validated with Zod, and the text is suppressed if it quotes any number that isn't in that packet ([src/lib/ai/grounding.ts](src/lib/ai/grounding.ts)).
+
+**Live dashboard.** Each write sends a data-free Supabase Realtime broadcast. The dashboard then refetches from the authenticated results API. It also polls every 15 seconds in case a broadcast is missed. The dashboard labels measured results and AI output separately.
+
+## Project Structure
+
+```
+src/
+  app/
+    experiment/        participant flow (mobile-first)
+    dashboard/         retailer dashboard (admin only)
+    admin/login/       admin sign-in
+    api/               participants, choices, stated, complete, results, admin/*
+  components/          ExperimentFlow, DashboardClient, ProductCard, SVG charts
+  lib/
+    experiment/        versioned config, types, randomised plans
+    analysis/          switch rates, switch points, say-do gaps, bootstrap (+ tests)
+    ai/                Groq calls, JSON schemas, evidence packet, number check (+ tests)
+    server/            Supabase clients, auth, rate limit, realtime, data loading
+supabase/migrations/   schema and RLS policies
+```
 
 ---
 
