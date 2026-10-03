@@ -23,7 +23,7 @@ export function DashboardClient({ initial, experimentUrl, qrDataUrl, realtime }:
   const { data, live, refresh } = useLiveDashboard(initial, realtime);
 
   return (
-    <main className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-8">
+    <main className="dashboard-page mx-auto flex max-w-6xl flex-col gap-8 px-4 py-8">
       <DashboardHeader experiment={data.experiment} versions={data.versions} live={live} />
       <OverviewPanel data={data} experimentUrl={experimentUrl} qrDataUrl={qrDataUrl} />
       <ObservedSection data={data} />

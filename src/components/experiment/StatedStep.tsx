@@ -29,7 +29,7 @@ export function StatedStep({
 
   return (
     <form
-      className="flex flex-col gap-5"
+      className="stated-form flex flex-col gap-5"
       onSubmit={(e) => {
         e.preventDefault();
         if (valid && !busy) onSubmit(reason.trim(), noPrice ? null : Math.round(parsed * 100) / 100);
