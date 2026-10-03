@@ -5,6 +5,7 @@ import type { InsightView, ReasonView } from "@/contracts/responses";
 import type {
   ChoiceRepository,
   ExperimentRepository,
+  FulfilmentRecord,
   FulfilmentRepository,
   InsertResult,
   InsightRepository,
@@ -20,8 +21,8 @@ import { isMissingTable, isNetworkFailure, isUniqueViolation, serviceDb } from "
  * public table access is revoked by migration 0003 (NFR2, NFR3).
  */
 
-const ROW_LIMIT = 10_000;
-const EXPORT_LIMIT = 50_000;
+// Stay below PostgREST's common max_rows setting, then page until exhausted.
+const PAGE_SIZE = 500;
 
 function check(error: { code?: string; message: string } | null): void {
   if (!error) return;
@@ -136,30 +137,45 @@ export const choiceRepository: ChoiceRepository = {
   },
 
   async listRecords(version): Promise<ChoiceRecord[]> {
-    const { data, error } = await serviceDb()
-      .from("choices")
-      .select("participant_id, scenario_id, chosen_product, chosen_side, baseline_product")
-      .eq("experiment_version", version)
-      .limit(ROW_LIMIT);
-    check(error);
-    return (data ?? []).map((c) => ({
-      participantId: c.participant_id,
-      scenarioId: c.scenario_id,
-      chosenProduct: c.chosen_product,
-      chosenSide: c.chosen_side,
-      baselineProduct: c.baseline_product,
-    }));
+    const rows: ChoiceRecord[] = [];
+    let cursor = 0;
+    for (;;) {
+      const { data, error } = await serviceDb()
+        .from("choices")
+        .select("id, participant_id, scenario_id, chosen_product, chosen_side, baseline_product")
+        .eq("experiment_version", version)
+        .gt("id", cursor)
+        .order("id", { ascending: true })
+        .limit(PAGE_SIZE);
+      check(error);
+      rows.push(...(data ?? []).map((c) => ({
+        participantId: c.participant_id,
+        scenarioId: c.scenario_id,
+        chosenProduct: c.chosen_product,
+        chosenSide: c.chosen_side,
+        baselineProduct: c.baseline_product,
+      })));
+      if (!data || data.length < PAGE_SIZE) return rows;
+      cursor = (data as unknown as { id: number }[])[data.length - 1].id;
+    }
   },
 
   async exportRows(version, columns) {
-    const { data, error } = await serviceDb()
-      .from("choices")
-      .select(columns.join(", "))
-      .eq("experiment_version", version)
-      .order("created_at")
-      .limit(EXPORT_LIMIT);
-    check(error);
-    return (data ?? []) as unknown as Record<string, unknown>[];
+    const rows: Record<string, unknown>[] = [];
+    let cursor = 0;
+    for (;;) {
+      const { data, error } = await serviceDb()
+        .from("choices")
+        .select(["id", ...columns].join(", "))
+        .eq("experiment_version", version)
+        .gt("id", cursor)
+        .order("id", { ascending: true })
+        .limit(PAGE_SIZE);
+      check(error);
+      rows.push(...((data ?? []) as unknown as Record<string, unknown>[]));
+      if (!data || data.length < PAGE_SIZE) return rows;
+      cursor = (data as unknown as { id: number }[])[data.length - 1].id;
+    }
   },
 };
 
@@ -220,37 +236,51 @@ export const statedReasonRepository: StatedReasonRepository = {
   },
 
   async list(version): Promise<ReasonView[]> {
-    const { data, error } = await serviceDb()
-      .from("stated_reasons")
-      .select(
-        "participant_id, phase, reason_text, stated_price_threshold, ai_status, ai_category, ai_confidence, override_category, created_at",
-      )
-      .eq("experiment_version", version)
-      .order("created_at", { ascending: false })
-      .limit(ROW_LIMIT);
-    check(error);
-    return (data ?? []).map((s) => ({
-      participantId: s.participant_id,
-      phase: s.phase,
-      reasonText: s.reason_text,
-      statedPriceThreshold: s.stated_price_threshold === null ? null : Number(s.stated_price_threshold),
-      aiStatus: s.ai_status,
-      aiCategory: asCategory(s.ai_category),
-      aiConfidence: s.ai_confidence,
-      overrideCategory: asCategory(s.override_category),
-      createdAt: s.created_at,
-    }));
+    const rows: ReasonView[] = [];
+    let cursor: string | null = null;
+    for (;;) {
+      let query = serviceDb()
+        .from("stated_reasons")
+        .select(
+          "participant_id, phase, reason_text, stated_price_threshold, ai_status, ai_category, ai_confidence, override_category, created_at",
+        )
+        .eq("experiment_version", version);
+      if (cursor) query = query.gt("participant_id", cursor);
+      const { data, error } = await query.order("participant_id", { ascending: true }).limit(PAGE_SIZE);
+      check(error);
+      rows.push(...(data ?? []).map((s) => ({
+        participantId: s.participant_id,
+        phase: s.phase,
+        reasonText: s.reason_text,
+        statedPriceThreshold: s.stated_price_threshold === null ? null : Number(s.stated_price_threshold),
+        aiStatus: s.ai_status,
+        aiCategory: asCategory(s.ai_category),
+        aiConfidence: s.ai_confidence,
+        overrideCategory: asCategory(s.override_category),
+        createdAt: s.created_at,
+      })));
+      if (!data || data.length < PAGE_SIZE) {
+        return rows.sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
+      }
+      cursor = (data as unknown as { participant_id: string }[])[data.length - 1].participant_id;
+    }
   },
 
   async exportRows(version, columns) {
-    const { data, error } = await serviceDb()
-      .from("stated_reasons")
-      .select(columns.join(", "))
-      .eq("experiment_version", version)
-      .order("created_at")
-      .limit(EXPORT_LIMIT);
-    check(error);
-    return (data ?? []) as unknown as Record<string, unknown>[];
+    const rows: Record<string, unknown>[] = [];
+    let cursor: string | null = null;
+    for (;;) {
+      let query = serviceDb()
+        .from("stated_reasons")
+        .select(columns.join(", "))
+        .eq("experiment_version", version);
+      if (cursor) query = query.gt("participant_id", cursor);
+      const { data, error } = await query.order("participant_id", { ascending: true }).limit(PAGE_SIZE);
+      check(error);
+      rows.push(...((data ?? []) as unknown as Record<string, unknown>[]));
+      if (!data || data.length < PAGE_SIZE) return rows;
+      cursor = (data as unknown as { participant_id: string }[])[data.length - 1].participant_id;
+    }
   },
 };
 
@@ -281,14 +311,24 @@ export const fulfilmentRepository: FulfilmentRepository = {
   },
 
   async list(version) {
-    const { data, error } = await serviceDb()
-      .from("fulfilments")
-      .select("participant_id, product, status, created_at, participants!inner(experiment_version)")
-      .eq("participants.experiment_version", version)
-      .order("created_at", { ascending: true })
-      .limit(ROW_LIMIT);
-    check(error);
-    return (data ?? []).map((f) => ({ participantId: f.participant_id, product: f.product, status: f.status }));
+    const rows: FulfilmentRecord[] = [];
+    let cursor: string | null = null;
+    for (;;) {
+      let query = serviceDb()
+        .from("fulfilments")
+        .select("participant_id, product, status, created_at, participants!inner(experiment_version)")
+        .eq("participants.experiment_version", version);
+      if (cursor) query = query.gt("participant_id", cursor);
+      const { data, error } = await query.order("participant_id", { ascending: true }).limit(PAGE_SIZE);
+      check(error);
+      rows.push(...(data ?? []).map((f) => ({
+        participantId: f.participant_id,
+        product: f.product,
+        status: f.status,
+      })));
+      if (!data || data.length < PAGE_SIZE) return rows;
+      cursor = data[data.length - 1].participant_id;
+    }
   },
 };
 
