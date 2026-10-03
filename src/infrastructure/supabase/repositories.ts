@@ -12,12 +12,12 @@ import type {
   StatedReasonRepository,
 } from "@/application/ports";
 import { unavailable } from "@/application/errors";
-import { isNetworkFailure, isUniqueViolation, publicDb, serviceDb } from "./clients";
+import { isNetworkFailure, isUniqueViolation, serviceDb } from "./clients";
 
 /**
  * Supabase implementations of the repository ports.
- * Participant-originated inserts use the anon client, which RLS limits to
- * INSERT only (NFR3); reads and admin writes use the service role (NFR2).
+ * Participant-originated writes use the service role only after API validation;
+ * public table access is revoked by migration 0003 (NFR2, NFR3).
  */
 
 const ROW_LIMIT = 10_000;
@@ -40,7 +40,7 @@ const asCategory = (v: unknown): ReasonCategory | null =>
 
 export const participantRepository: ParticipantRepository = {
   async create({ id, experimentVersion, plan }) {
-    const { error } = await publicDb()
+    const { error } = await serviceDb()
       .from("participants")
       .insert({ id, experiment_version: experimentVersion, say_first: plan.sayFirst, plan });
     check(error);
@@ -91,7 +91,7 @@ export const participantRepository: ParticipantRepository = {
 
 export const choiceRepository: ChoiceRepository = {
   async insert(c) {
-    const { error } = await publicDb().from("choices").insert({
+    const { error } = await serviceDb().from("choices").insert({
       participant_id: c.participantId,
       experiment_version: c.experimentVersion,
       scenario_id: c.scenarioId,
@@ -159,7 +159,7 @@ export const choiceRepository: ChoiceRepository = {
 
 export const statedReasonRepository: StatedReasonRepository = {
   async insert(r) {
-    const { error } = await publicDb().from("stated_reasons").insert({
+    const { error } = await serviceDb().from("stated_reasons").insert({
       participant_id: r.participantId,
       experiment_version: r.experimentVersion,
       phase: r.phase,

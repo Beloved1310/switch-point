@@ -21,17 +21,7 @@ const opts = {
   global: { fetch: fetchWithTimeout },
 };
 
-let publicClient: SupabaseClient | null = null;
 let serviceClient: SupabaseClient | null = null;
-
-/** Anon-key client: RLS allows it to INSERT responses and nothing else. */
-export function publicDb(): SupabaseClient {
-  return (publicClient ??= createClient(
-    env("NEXT_PUBLIC_SUPABASE_URL"),
-    env("NEXT_PUBLIC_SUPABASE_ANON_KEY"),
-    opts,
-  ));
-}
 
 /** Service-role client: bypasses RLS. Server-only (NFR2). */
 export function serviceDb(): SupabaseClient {
