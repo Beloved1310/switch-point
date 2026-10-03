@@ -1,5 +1,6 @@
 node_modules/
 .next/
+.next-e2e/
 out/
 coverage/
 .vercel/
@@ -10,3 +11,7 @@ coverage/
 next-env.d.ts
 # local secrets saved without the leading dot
 env
+# Playwright
+/test-results/
+/playwright-report/
+/e2e/.auth/

@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "tsc --noEmit",
     "test": "vitest run",
-    "seed:synthetic-demo": "python3 scripts/generate-synthetic-demo-data.py && node scripts/seed-synthetic-demo.mjs"
+    "seed:synthetic-demo": "python3 scripts/generate-synthetic-demo-data.py && node scripts/seed-synthetic-demo.mjs",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.109.0",
@@ -21,6 +22,7 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^26.6.4",
     "@types/qrcode": "^1.5.6",
