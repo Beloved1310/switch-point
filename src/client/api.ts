@@ -3,6 +3,7 @@ import type {
   CompleteResponse,
   DashboardData,
   InsightView,
+  ResumeParticipantResponse,
   RecordChoiceResponse,
   StartParticipantResponse,
 } from "@/contracts/responses";
@@ -37,6 +38,8 @@ const withVersion = (path: string, version?: string) =>
 
 export const participantApi = {
   start: () => post<StartParticipantResponse>("/api/participants"),
+  resume: (participantId: string) =>
+    post<ResumeParticipantResponse>("/api/participants/resume", { participantId }),
   choose: (participantId: string, scenarioId: string, side: Side) =>
     post<RecordChoiceResponse>("/api/choices", { participantId, scenarioId, side }),
   state: (participantId: string, reasonText: string, statedPriceThreshold: number | null) =>

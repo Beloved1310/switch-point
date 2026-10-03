@@ -19,7 +19,7 @@ export interface ExperimentIntro {
 
 /** Renders the current step; state and API calls live in useExperimentSession. */
 export function ExperimentFlow({ intro }: { intro: ExperimentIntro }) {
-  const { step, session, busy, error, consent, chooseBaseline, chooseScenario, submitStated } =
+  const { step, session, busy, restored, error, consent, chooseBaseline, chooseScenario, submitStated } =
     useExperimentSession();
   const headingRef = useRef<HTMLHeadingElement>(null);
 
@@ -41,6 +41,7 @@ export function ExperimentFlow({ intro }: { intro: ExperimentIntro }) {
         <span className="experiment-top-meta">Shopper choice study · Coffee</span>
       </header>
       {session && made !== null && <ProgressBar done={made} total={session.totalChoices} />}
+      {restored && <p role="status" className="mx-auto mb-4 max-w-3xl text-sm text-ink-2">Your saved progress has been restored.</p>}
 
       {error && <ErrorBanner message={error.message} onRetry={error.retry} />}
 

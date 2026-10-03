@@ -11,6 +11,15 @@ export interface StartParticipantResponse {
   baseline: Screen;
 }
 
+export interface ResumeParticipantResponse extends StartParticipantResponse {
+  screens: Screen[];
+  baselineProduct: ProductId | null;
+  completedScenarioIds: string[];
+  hasStated: boolean;
+  completed: boolean;
+  reward: Reward | null;
+}
+
 export interface RecordChoiceResponse {
   ok: true;
   /** Present after the baseline choice: the controlled screens in plan order. */
