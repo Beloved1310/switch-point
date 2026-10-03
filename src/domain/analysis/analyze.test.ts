@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { EXPERIMENT } from "../experiment/config";
-import type { ProductId } from "../experiment/types";
+import { coffeeV1 as EXPERIMENT } from "@/config/experiments/coffee-v1";
+import type { ProductId } from "@/domain/experiment/types";
 import {
   analyze,
   classifyPriceGap,

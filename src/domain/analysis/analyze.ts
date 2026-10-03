@@ -1,4 +1,4 @@
-import type { ExperimentConfig, Lever, ProductId, ReasonCategory, Side } from "../experiment/types";
+import type { ExperimentConfig, Lever, ProductId, ReasonCategory, Side } from "@/domain/experiment/types";
 import { bootstrapInterval, mean, median, type Interval } from "./stats";
 
 /** Below this many participants a result is labelled directional (FR19, NFR16). */
