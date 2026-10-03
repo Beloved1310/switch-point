@@ -8,3 +8,5 @@ coverage/
 .DS_Store
 *.tsbuildinfo
 next-env.d.ts
+# local secrets saved without the leading dot
+env
