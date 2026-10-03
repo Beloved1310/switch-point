@@ -1,5 +1,5 @@
-import type { Analysis } from "../analysis/analyze";
-import type { ExperimentConfig } from "../experiment/types";
+import type { Analysis } from "@/domain/analysis/analyze";
+import type { ExperimentConfig } from "@/domain/experiment/types";
 
 const pct = (x: number | null) => (x === null ? null : Math.round(x * 100));
 const money = (x: number | null) => (x === null ? null : Math.round(x * 100) / 100);
